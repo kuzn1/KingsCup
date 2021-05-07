@@ -49,5 +49,14 @@
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintVertical_bias="0.05"
-            android:onClick="connect"/>
+            android:onClick="onClick"/>
+    <Button
+            style="@style/buttonStyle"
+            android:text="@string/back"
+            android:id="@+id/backButton"
+            app:layout_constraintTop_toBottomOf="@+id/textInput"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.9"
+            android:onClick="onClick"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

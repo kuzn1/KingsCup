@@ -29,6 +29,11 @@
                   android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
 
+        <activity android:name=".PlayerViewActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+        </activity>
+
     </application>
 
 </manifest>

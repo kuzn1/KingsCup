@@ -9,6 +9,7 @@ import pwr.am.kingscup.databinding.ActivityLobbyBinding
 
 class LobbyActivity : Activity() {
     private lateinit var binding: ActivityLobbyBinding
+    private var owner : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +17,9 @@ class LobbyActivity : Activity() {
         binding.idTextView.text = intent.getStringExtra("ID").toString()
         updatePlayers()
         binding.femaleCheckBox.isChecked = true
-        if(intent.getBooleanExtra("OWNER", false)) binding.startButton.visibility = View.VISIBLE
+        owner = intent.getBooleanExtra("OWNER", false)
+
+        if(owner) binding.startButton.visibility = View.VISIBLE
 
         setContentView(binding.root)
     }
@@ -40,7 +43,8 @@ class LobbyActivity : Activity() {
     fun onClick(view: View) {
         when(view){
             binding.startButton-> start()
-            binding.playersButton-> {}// todo start lobbyPlayerView activity activity
+            binding.playersButton->
+                startActivity(Intent(this, PlayerViewActivity::class.java).putExtra("OWNER", owner))
             binding.deckButton-> {} // todo start deckView activity
             binding.leaveButton-> {
                 // todo send leave information to firebase
