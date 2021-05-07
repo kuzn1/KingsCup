@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Kings Cup</string>
+    <string name="new_game">New Game</string>
+    <string name="join_game">Join Game</string>
+    <string name="options">Options</string>
+    <string name="about">About</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="enter_room_id">enter room id</string>
+    <string name="connect">Connect</string>
+    <string name="deck_view">Deck View</string>
+    <string name="leave">Leave</string>
+    <string name="room_id">Room ID</string>
+    <string name="start">Start</string>
+    <string name="players">Players</string>
+    <string name="back">Back</string>
+    <string name="playerCount">Players %1$d/12</string>
+    <string name="devCode">DEVDEV</string>
 </resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "642960481916",
+    "firebase_url": "https://kingscup-4f37b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "kingscup-4f37b",
+    "storage_bucket": "kingscup-4f37b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642960481916:android:201bd27d013edb477a33f9",
+        "android_client_info": {
+          "package_name": "pwr.am.kingscup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642960481916-72o7k0bj3scr9jv17f9tncal2sgnt0rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTw4gLatADqkqh108I17EzpAuQFFIN7_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642960481916-72o7k0bj3scr9jv17f9tncal2sgnt0rg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
