@@ -29,8 +29,8 @@ class MainActivity : Activity() {
                 startActivity(intent)
             }
             binding.joinButton-> startActivity(Intent(this, JoinActivity::class.java))
-            binding.optionsButton-> {} // todo start options activity
-            binding.aboutButton-> {} // todo start about activity
+            binding.optionsButton-> startActivity(Intent(this, OptionsActivity::class.java))
+            binding.aboutButton-> startActivity(Intent(this, AboutActivity::class.java))
         }
     }
 

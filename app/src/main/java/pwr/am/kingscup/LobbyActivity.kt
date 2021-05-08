@@ -45,7 +45,7 @@ class LobbyActivity : Activity() {
             binding.startButton-> start()
             binding.playersButton->
                 startActivity(Intent(this, PlayerViewActivity::class.java).putExtra("OWNER", owner))
-            binding.deckButton-> {} // todo start deckView activity
+            binding.deckButton-> startActivity(Intent(this, CardViewActivity::class.java))
             binding.leaveButton-> {
                 // todo send leave information to firebase
                 startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

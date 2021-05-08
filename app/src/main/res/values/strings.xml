@@ -17,4 +17,7 @@
     <string name="playerCount">Players %1$d/12</string>
     <string name="devCode">DEVDEV</string>
     <string name="kick">Kick</string>
+    <string name="nickname">Nickname:</string>
+    <string name="aboutText">\nAbout\n\n\n\n\n\n\n\nIt will be a cool app\n\n You will see\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWIP btw</string>
+    <string name="nick">nick</string>
 </resources>
