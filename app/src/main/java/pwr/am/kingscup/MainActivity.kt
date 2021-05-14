@@ -3,6 +3,7 @@ package pwr.am.kingscup
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Message
 import android.view.View
 import pwr.am.kingscup.databinding.ActivityMainBinding
 
@@ -20,11 +21,7 @@ class MainActivity : Activity() {
     fun onClick(view: View) {
         when(view){
             binding.playButton-> {
-                // todo create new game in firebase
-                val id = "DEVDEV"
-
                 val intent = Intent(this, LobbyActivity::class.java)
-                intent.putExtra("ID", id)
                 intent.putExtra("OWNER", true)
                 startActivity(intent)
             }
