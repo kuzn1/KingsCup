@@ -17,7 +17,27 @@
     <string name="playerCount">Players %1$d/12</string>
     <string name="devCode">DEVDEV</string>
     <string name="kick">Kick</string>
-    <string name="nickname">Nickname:</string>
-    <string name="aboutText">\nAbout\n\n\n\n\n\n\n\nIt will be a cool app\n\n You will see\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWIP btw</string>
+    <string name="nickname">Nickname</string>
+    <string name="about_text">
+    <!--todo write about string-->
+        \nAbout\n\n\n\n\n\n\n\nIt will be a cool app\n\n You will see\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWIP btw
+    </string>
     <string name="nick">nick</string>
+    <string name="default_gender">Default Gender</string>
+    <string name="card_texture">Card texture</string>
+    <string name="texture_quality">Texture quality</string>
+    <string-array name="card_texture_name_array">
+        <item>Default</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="texture_quality_name_array">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="card_description_array">
+        <!--todo write card descriptions-->
+        <item>SAMPLE CARD DESCRIPTION</item>
+        <item>SAMPLE CARD DESCRIPTION NUMBER 2</item>
+    </string-array>
 </resources>

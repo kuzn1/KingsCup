@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="card_width">
+        <item>320</item>
+        <item>480</item>
+        <item>720</item>
+        <item>1080</item>
+    </integer-array>
+
+    <integer-array name="card_height">
+        <item>498</item>
+        <item>747</item>
+        <item>1121</item>
+        <item>1682</item>
+    </integer-array>
+</resources>

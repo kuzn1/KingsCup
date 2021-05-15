@@ -37,14 +37,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/maleCheckBox"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.42"
             android:textSize="24sp"
-            android:textAlignment="viewStart"
-            android:onClick="onCheck"/>
+            android:textAlignment="center"
+            android:onClick="onCheck"
+            app:layout_constraintStart_toEndOf="@+id/space"/>
 
     <CheckBox
             android:text="@string/female"
@@ -52,13 +51,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/femaleCheckBox"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.42"
             android:textSize="24sp"
-            android:onClick="onCheck"/>
+            android:onClick="onCheck"
+            app:layout_constraintEnd_toStartOf="@+id/space"
+            android:textAlignment="center"/>
 
     <Button
             style="@style/buttonStyle"
@@ -137,5 +136,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="0.3"/>
+
+    <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteY="308dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.42"
+            android:id="@+id/space"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

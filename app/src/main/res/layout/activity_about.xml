@@ -46,7 +46,7 @@
                     app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
-                    android:text="@string/aboutText"
+                    android:text="@string/about_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
