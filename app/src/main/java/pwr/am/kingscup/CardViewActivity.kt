@@ -13,9 +13,18 @@ class CardViewActivity : Activity(){
 
         binding = ActivityCardViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setCards()
     }
 
-    //todo implement viewPager and card fragment
+    private fun setCards(){
+        // TODO get cards from firebase
+        val cardIdList : ArrayList<Int> = ArrayList()
+        for (i in 0..54)
+            cardIdList.add(i)
+
+        binding.viewPager.adapter = CardPagerAdapter(this, cardIdList)
+    }
 
     fun back(view: View) {
         finish()
