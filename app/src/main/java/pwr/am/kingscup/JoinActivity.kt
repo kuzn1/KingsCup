@@ -30,8 +30,6 @@ class JoinActivity : Activity() {
                     if (it.child("gameCode").value == null || id.length < 6) {
                         Toast.makeText(applicationContext, "Wrong ID", Toast.LENGTH_SHORT).show()
                     } else {
-                        //Log.e("mytesting", it.child("gameCode").value.toString())
-                        //Log.e("mytesting", it.child("gameKey").value.toString())
                         val intent = Intent(this, LobbyActivity::class.java)
                         intent.putExtra("gameCode", it.child("gameCode").value.toString())
                         intent.putExtra("gameKey", it.child("gameKey").value.toString())

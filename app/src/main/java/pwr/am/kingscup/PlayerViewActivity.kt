@@ -1,20 +1,19 @@
 package pwr.am.kingscup
 
 import android.app.Activity
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import pwr.am.kingscup.databinding.ActivityPlayerViewBinding
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.databinding.ActivityPlayerViewBinding
 import pwr.am.kingscup.databinding.PlayerViewRowBinding
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class PlayerViewActivity : Activity() {
@@ -24,16 +23,24 @@ class PlayerViewActivity : Activity() {
     private var referenceGames = database.getReference("games")
     private lateinit var listener: ChildEventListener
     private lateinit var gameKey: String
+    private lateinit var lobby: Lobby
+    private lateinit var config : SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
+        config = getSharedPreferences("KingsCupConfig", MODE_PRIVATE)
+
         binding = ActivityPlayerViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         gameKey = intent.getStringExtra("gameKey").toString()
+        lobby = Lobby(gameKey)
+        lobby.playerKey = intent.getStringExtra("playerKey").toString()
+        lobby.addServerTickListener(this)
+
         players = ArrayList()
         listener = referenceGames.child(gameKey)
             .child("players").addChildEventListener(object : ChildEventListener {
@@ -47,6 +54,15 @@ class PlayerViewActivity : Activity() {
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
+                    if(snapshot.key.toString() == intent.getStringExtra("playerKey").toString()){
+                        referenceGames.child(gameKey).child("players").removeEventListener(listener)
+                        val intent = Intent()
+                        intent.putExtra("result", "kick")
+                        lobby.removeServerTickListener()
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+
                     for (player in players){
                         if(player.second == snapshot.key.toString())
                             players.remove(player)
@@ -55,6 +71,8 @@ class PlayerViewActivity : Activity() {
                 }
 
             })
+
+
     }
 
     fun loadPlayers(owner: Boolean) {
@@ -62,16 +80,14 @@ class PlayerViewActivity : Activity() {
         for (player: Pair<String, String> in players) {
             val row = PlayerViewRowBinding.inflate(LayoutInflater.from(this))
             row.nickName.text = player.first
-            if (owner) {
+            if (owner && player.first != config.getString("nick", "Player")) {
                 row.kickButton.visibility = View.VISIBLE
                 row.kickButton.setOnClickListener { kickPlayer(player.second) }
             }
             binding.playerList.addView(row.root)
         }
-
     }
 
-    //TODO YOU CAN KICK YOURSELF!!!
     //TODO BAN
     fun kickPlayer(playerID: String) {
         referenceGames.child(gameKey).child("players").child(playerID).removeValue()
@@ -80,11 +96,19 @@ class PlayerViewActivity : Activity() {
 
     fun back(view: View) {
         referenceGames.child(gameKey).child("players").removeEventListener(listener)
+        lobby.removeServerTickListener()
+        val intent = Intent()
+        intent.putExtra("result", "back");
+        this.setResult(RESULT_OK, intent)
         finish()
     }
 
     override fun onBackPressed() {
         referenceGames.child(gameKey).child("players").removeEventListener(listener)
+        lobby.removeServerTickListener()
+        val intent = Intent()
+        intent.putExtra("result", "back");
+        this.setResult(RESULT_OK, intent)
         finish()
         super.onBackPressed()
     }

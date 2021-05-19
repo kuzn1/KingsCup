@@ -17,12 +17,14 @@ class Server() {
     private var openGames = database.getReference("openGames")
     private var gameTick = 0
     private var playerCount = 0
+    private lateinit var listenerToPlayers : ChildEventListener
     var gameCode = ""
     var gameKey : String = ""
 
     fun createGame(){
         generateRoomCode()
 
+        //TODO CreateCards
         val gameData = Gamedata(0,"waiting",0,0)
         val game = Game(gameCode , gameData)
         gameKey = referenceGames.push().key.toString()
@@ -40,6 +42,8 @@ class Server() {
     fun addCardsToGame(cards : ArrayList<Card>) {
         referenceGames.child(gameKey).child("card_set").setValue(cards)
     }
+
+    //TODO move to new class
     fun setNewGameStatus(status : String){
         referenceGames.child(gameKey).child("gamedata").child("game_status").setValue(status)
     }
@@ -51,7 +55,7 @@ class Server() {
     //updates player_count
     //TODO remove event listener when not needed
     fun addListenerToPlayers(){
-        referenceGames.child(gameKey).child("players").addChildEventListener(object :
+        listenerToPlayers = referenceGames.child(gameKey).child("players").addChildEventListener(object :
             ChildEventListener {
             override fun onCancelled(error: DatabaseError) {}
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
@@ -66,52 +70,26 @@ class Server() {
             }
         })
     }
-/*
-    fun searchForPlayers() {
-        referencePlayers.addChildEventListener(object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Log.w(myTag, "Failed to read value.", error.toException())
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                if (snapshot.child("roomCode").value == gameCode) {
-                    //gives player gameKey
-                    referencePlayers.child(snapshot.key.toString())
-                        .child("gameid")
-                        .setValue(mykey)
-                    //adds player to game
-                    referenceGames.child(mykey)
-                        .child("players")
-                        .child(snapshot.key.toString())
-                        .child("name")
-                        .setValue(snapshot.child("name").value)
-
-                    playerList.add(snapshot.child("name").value as String)
-                    Log.e(myTag, playerList.toString())
-
-                    //val toast = Toast.makeText(
-                    //    applicationContext,
-                    //    "PlayerJoin " + snapshot.child("name").value,
-                    //    Toast.LENGTH_SHORT
-                    //)
-                    //toast.show()
-                }
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
-        })
-    }
-
- */
 
     //adds gameKey and gameCode to openGames so players can find game
-    //TODO remove when game starts
     fun makeGamePublic(){
     openGames.child(gameCode).setValue(OpenGame(gameCode, gameKey))
+    }
+    //removes gameKey and gameCode from openGames
+    fun makeGamePrivate(){
+        openGames.child(gameCode).removeValue()
+    }
 
-}
+    fun removeGame(){
+        referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
+        referenceGames.child(gameKey).child("players").removeValue()
+        openGames.child(gameCode).removeValue()
+        referenceGames.child(gameKey).removeValue()
+    }
+
+
+
+
     data class OpenGame(
         val gameCode : String? = null,
         val gameKey : String? = null
