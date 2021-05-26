@@ -26,6 +26,7 @@
     <string name="default_gender">Default Gender</string>
     <string name="card_texture">Card texture</string>
     <string name="texture_quality">Texture quality</string>
+    <string name="choose">Choose</string>
     <string-array name="card_texture_name_array">
         <item>Default</item>
         <item>Dark</item>
