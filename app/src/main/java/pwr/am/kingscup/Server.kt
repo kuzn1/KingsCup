@@ -43,15 +43,6 @@ class Server() {
         referenceGames.child(gameKey).child("card_set").setValue(cards)
     }
 
-    //TODO move to new class
-    fun setNewGameStatus(status : String){
-        referenceGames.child(gameKey).child("gamedata").child("game_status").setValue(status)
-    }
-    fun updateGameTick(){
-        gameTick++
-        referenceGames.child(gameKey).child("gamedata").child("server_tick").setValue(gameTick)
-    }
-
     //updates player_count
     //TODO remove event listener when not needed
     fun addListenerToPlayers(){
@@ -86,9 +77,6 @@ class Server() {
         openGames.child(gameCode).removeValue()
         referenceGames.child(gameKey).removeValue()
     }
-
-
-
 
     data class OpenGame(
         val gameCode : String? = null,

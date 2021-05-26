@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.options
 
 class Lobby(val gameKey : String) {
 
@@ -49,6 +50,7 @@ class Lobby(val gameKey : String) {
                 }
             }
         })
+
     }
 
     //removes ListenerToServerTick
@@ -77,6 +79,7 @@ class Lobby(val gameKey : String) {
                 activity.finish()
             }
         })
+        referenceGames.child(gameKey).child("players").child(playerKey).onDisconnect().removeValue()
     }
 
     //removes listenerToPlayer

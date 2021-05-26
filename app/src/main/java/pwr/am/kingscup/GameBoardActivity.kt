@@ -1,12 +1,8 @@
 package pwr.am.kingscup
 
 import android.app.Activity
-import android.opengl.GLSurfaceView
+import android.content.Intent
 import android.os.Bundle
-import android.view.Display
-import androidx.core.graphics.drawable.toBitmap
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import pwr.am.kingscup.databinding.ActivityGameBoardBinding
 import pwr.am.kingscup.render.Background
 import pwr.am.kingscup.render.Card
@@ -20,8 +16,8 @@ class GameBoardActivity : Activity() {
     private var owner: Boolean = false
     private lateinit var gameKey: String
     private lateinit var playerKey: String
-
     private lateinit var glView: OpenGLView
+    private lateinit var playerLogic : PlayerLogic
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +28,16 @@ class GameBoardActivity : Activity() {
         gameKey = intent.getStringExtra("gameKey").toString()
 
         if(owner){
-            //TODO Start GameLogicClass
-            //temp
-            Firebase.database.getReference("games").child(gameKey).child("gamedata").child("server_tick").setValue(1)
+            intent = Intent(this, GameLogic::class.java)
+            intent.putExtra("gameKey", gameKey)
+            startService(intent)
         }
-        //TODO Start BoardClass
+
+        //todo
+        //playerLogic.getPlayerGender()
+        //playerLogic = PlayerLogic(gameKey , playerKey)
+        //playerLogic.addListenerToGameData()
+
 
         glView = OpenGLView(this)
         setContentView(glView)
@@ -48,6 +49,7 @@ class GameBoardActivity : Activity() {
         spinXAnimation(glView.drawables[1])
         spinYAnimation(glView.drawables[2])
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -71,5 +73,10 @@ class GameBoardActivity : Activity() {
             drawable.rotateY(1.0f)
             spinYAnimation(drawable)
         }
+    }
+
+    override fun onDestroy() {
+        stopService(Intent(this, GameLogic::class.java))
+        super.onDestroy()
     }
 }
