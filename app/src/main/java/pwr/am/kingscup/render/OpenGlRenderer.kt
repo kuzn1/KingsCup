@@ -2,6 +2,8 @@ package pwr.am.kingscup.render
 
 import android.content.Context
 import android.opengl.*
+import android.os.SystemClock
+import java.time.Duration
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.collections.ArrayList
@@ -11,6 +13,7 @@ class OpenGlRenderer(val context : Context, private val drawables : ArrayList<Dr
     private var backgroundShaderProgram : Int = 0
     private val viewMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
+    private var lastTime : Long = 0
 
     val vertexShaderCode =
         """
@@ -72,12 +75,25 @@ class OpenGlRenderer(val context : Context, private val drawables : ArrayList<Dr
         GLES31.glDepthFunc(GLES31.GL_LEQUAL)
         GLES31.glClear(GLES31.GL_COLOR_BUFFER_BIT)
         GLES31.glDisable(GLES31.GL_CULL_FACE)
+        lastTime = SystemClock.uptimeMillis()
     }
 
     override fun onDrawFrame(gl: GL10?) {
+        val currentTime = SystemClock.uptimeMillis()
+        val deltaTime = currentTime - lastTime
+        lastTime = currentTime
         GLES31.glClear(GLES31.GL_COLOR_BUFFER_BIT or GLES31.GL_DEPTH_BUFFER_BIT)
-        drawables.forEach {
-            it.draw(viewMatrix, projectionMatrix)
+
+        var i = 0
+        var last = drawables.size
+        while(i<last) {
+            drawables[i].draw(deltaTime, viewMatrix, projectionMatrix)
+            if(drawables[i].deleteFlag) {
+                drawables.removeAt(i)
+                last--
+            }else{
+                i++
+            }
         }
     }
 

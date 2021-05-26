@@ -3,12 +3,15 @@ package pwr.am.kingscup
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Display
+import android.view.KeyEvent
+import androidx.core.graphics.drawable.toBitmap
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import pwr.am.kingscup.databinding.ActivityGameBoardBinding
-import pwr.am.kingscup.render.Background
-import pwr.am.kingscup.render.Card
-import pwr.am.kingscup.render.Drawable
-import pwr.am.kingscup.render.OpenGLView
+import pwr.am.kingscup.render.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 class GameBoardActivity : Activity() {
@@ -16,8 +19,11 @@ class GameBoardActivity : Activity() {
     private var owner: Boolean = false
     private lateinit var gameKey: String
     private lateinit var playerKey: String
-    private lateinit var glView: OpenGLView
     private lateinit var playerLogic : PlayerLogic
+    private lateinit var game : Game
+
+    lateinit var glView: OpenGLView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,14 +48,8 @@ class GameBoardActivity : Activity() {
         glView = OpenGLView(this)
         setContentView(glView)
         glView.drawables.add(Background())
-        glView.drawables.add(Card(1))
-        glView.drawables.add(Card(12))
-        glView.drawables[1].move(1.0f, 0.0f, -3.0f)
-        glView.drawables[2].move(-1.0f, 0.0f, -3.0f)
-        spinXAnimation(glView.drawables[1])
-        spinYAnimation(glView.drawables[2])
+        game = Game(this, glView.drawables)
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -61,18 +61,10 @@ class GameBoardActivity : Activity() {
         glView.onResume()
     }
 
-    fun spinXAnimation(drawable : Drawable){
-        Timer("spin", false).schedule(20) {
-            drawable.rotateX(1.0f)
-            spinXAnimation(drawable)
-        }
-    }
-
-    fun spinYAnimation(drawable : Drawable){
-        Timer("spin", false).schedule(20) {
-            drawable.rotateY(1.0f)
-            spinYAnimation(drawable)
-        }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if(6<keyCode && keyCode<17)
+            game.start(keyCode-7)
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun onDestroy() {

@@ -57,7 +57,7 @@ class Background(): Drawable() {
         }
     }
 
-    override fun draw(viewMatrix : FloatArray, projectionMatrix : FloatArray) {
+    override fun draw(time: Long, viewMatrix : FloatArray, projectionMatrix : FloatArray) {
         GLES31.glUseProgram(shaderProgram)
 
         val vertexHandle = GLES31.glGetAttribLocation(shaderProgram, "aVertexPosition")

@@ -116,19 +116,20 @@ class Card(val id : Int): Drawable() {
     }
 
     init {
-        offset[2] = -1.6f
+        position[2] = -1.6f
         //todo assign texture based on card ID
         textureIndex = id
     }
 
-    override fun draw(viewMatrix : FloatArray, projectionMatrix : FloatArray) {
+    override fun draw(time: Long, viewMatrix : FloatArray, projectionMatrix : FloatArray) {
+        calculateAnimations(time)
         if(modelMatrixChange) {
             Matrix.setIdentityM(modelMatrix, 0)
-            Matrix.translateM(modelMatrix, 0, offset[0], offset[1], offset[2])
+            Matrix.translateM(modelMatrix, 0, position[0], position[1], position[2])
 
-            Matrix.rotateM(modelMatrix, 0, rotation[0], 1.0f, 0.0f, 0.0f)
-            Matrix.rotateM(modelMatrix, 0, rotation[1], 0.0f, 1.0f, 0.0f)
-            Matrix.rotateM(modelMatrix, 0, rotation[2], 0.0f, 0.0f, 1.0f)
+            Matrix.rotateM(modelMatrix, 0, position[3], 1.0f, 0.0f, 0.0f)
+            Matrix.rotateM(modelMatrix, 0, position[4], 0.0f, 1.0f, 0.0f)
+            Matrix.rotateM(modelMatrix, 0, position[5], 0.0f, 0.0f, 1.0f)
             modelMatrixChange = false
         }
 
@@ -137,8 +138,8 @@ class Card(val id : Int): Drawable() {
         val samplerHandle = GLES31.glGetUniformLocation(shaderProgram, "uSampler")
         GLES31.glActiveTexture(GLES31.GL_TEXTURE0)
         //todo change to based on perspective not just angle
-        if( 270.0f > rotation[0] && rotation[0] > 90.0f ||
-            270.0f > rotation[1] && rotation[1] > 90.0f) GLES31.glBindTexture(GLES31.GL_TEXTURE_2D, texturesHandle[54])
+        if( 270.0f > position[3] && position[3] > 90.0f ||
+            270.0f > position[4] && position[4] > 90.0f) GLES31.glBindTexture(GLES31.GL_TEXTURE_2D, texturesHandle[54])
         else GLES31.glBindTexture(GLES31.GL_TEXTURE_2D, texturesHandle[textureIndex])
 
         GLES31.glUniform1i(samplerHandle, 0)

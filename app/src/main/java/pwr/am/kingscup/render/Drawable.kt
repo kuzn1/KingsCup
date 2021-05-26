@@ -1,38 +1,52 @@
 package pwr.am.kingscup.render
 
-import android.content.Context
+import java.util.*
 
 abstract class Drawable (){
     protected var modelMatrixChange = true
     protected val modelMatrix = FloatArray(16)
-    protected val offset = floatArrayOf(0.0f, 0.0f, 0.0f)
-    protected val rotation = floatArrayOf(0.0f, 0.0f, 0.0f)
-
+    protected val position = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
+    protected var animationQueue : Queue<Animation> = LinkedList()
+    var deleteFlag = false
 
     fun move(dx : Float, dy: Float, dz : Float){
-        offset[0] += dx
-        offset[1] += dy
-        offset[2] += dz
+        position[0] += dx
+        position[1] += dy
+        position[2] += dz
         modelMatrixChange = true
     }
 
     fun rotateX(angle : Float){
-        rotation[0] += angle
-        rotation[0] %= 360.0f
+        position[3] += angle
+        position[3] %= 360.0f
         modelMatrixChange = true
     }
 
     fun rotateY(angle : Float){
-        rotation[1] += angle
-        rotation[1] %= 360.0f
+        position[4] += angle
+        position[4] %= 360.0f
         modelMatrixChange = true
     }
 
     fun rotateZ(angle : Float){
-        rotation[2] += angle
-        rotation[2] %= 360.0f
+        position[5] += angle
+        position[5] %= 360.0f
         modelMatrixChange = true
     }
 
-    abstract fun draw(viewMatrix : FloatArray, projectionMatrix : FloatArray)
+    fun calculateAnimations(time : Long){
+        var ticks = time
+        while(ticks>0){
+            if(animationQueue.isEmpty()) break
+            ticks = animationQueue.peek().animate(position, ticks)
+            if(ticks > 0) animationQueue.poll()
+            modelMatrixChange = true
+        }
+    }
+
+    fun animate(animation : Animation){
+        animationQueue.add(animation)
+    }
+
+    abstract fun draw(time: Long, viewMatrix : FloatArray, projectionMatrix : FloatArray)
 }
