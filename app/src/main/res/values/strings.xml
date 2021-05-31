@@ -27,6 +27,8 @@
     <string name="card_texture">Card texture</string>
     <string name="texture_quality">Texture quality</string>
     <string name="choose">Choose</string>
+    <string name="go_to_lobby">Go to lobby</string>
+    <string name="game_ended">Game Ended</string>
     <string-array name="card_texture_name_array">
         <item>Default</item>
         <item>Dark</item>

@@ -8,6 +8,8 @@ import android.view.KeyEvent
 import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pwr.am.kingscup.databinding.ActivityGameBoardBinding
 import pwr.am.kingscup.render.*
 import java.util.*
@@ -63,7 +65,9 @@ class GameBoardActivity : Activity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(6<keyCode && keyCode<17)
-            game.start(keyCode-7)
+            GlobalScope.launch{
+                game.start(keyCode-7)
+            }
         return super.onKeyDown(keyCode, event)
     }
 

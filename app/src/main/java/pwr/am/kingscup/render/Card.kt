@@ -15,7 +15,7 @@ import android.opengl.Matrix
 import pwr.am.kingscup.R
 
 
-class Card(val id : Int): Drawable() {
+class Card(id : Int): Drawable() {
     private var textureIndex : Int
 
     companion object{
@@ -97,7 +97,7 @@ class Card(val id : Int): Drawable() {
             GLES31.glGenTextures(55, texturesHandle, 0)
 
 
-            val input = context.resources.openRawResource(cardResource)
+            val input = context.resources.openRawResource(+cardResource)
             val decoder = BitmapRegionDecoder.newInstance(input, false)
             for(i in 0..54){
                 val x = (i % 13) * cardWidth

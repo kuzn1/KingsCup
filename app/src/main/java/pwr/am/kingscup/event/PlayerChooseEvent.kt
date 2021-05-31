@@ -19,30 +19,34 @@ class PlayerChooseEvent(game: Game): Event(game) {
     }
 
     override fun start() {
-        binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
+        game.context.runOnUiThread {
+            binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
 
-        binding.playerList.removeAllViews()
-        for (player: Pair<String, String> in players) {
-            val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
-            row.nickName.text = player.first
-            row.kickButton.visibility = View.VISIBLE
-            row.kickButton.text = game.context.getString(R.string.choose)
-            row.kickButton.setOnClickListener{
-                if(!chosen) {
-                    chosen = true
-                    game.respond("player", player.second)
+            binding.playerList.removeAllViews()
+            for (player: Pair<String, String> in players) {
+                val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
+                row.nickName.text = player.first
+                row.kickButton.visibility = View.VISIBLE
+                row.kickButton.text = game.context.getString(R.string.choose)
+                row.kickButton.setOnClickListener{
+                    if(!chosen) {
+                        chosen = true
+                        game.respond("player", player.second)
+                    }
                 }
+                binding.playerList.addView(row.root)
             }
-            binding.playerList.addView(row.root)
-        }
 
-        game.context.addContentView(
-            binding.root,
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        )
+            game.context.addContentView(
+                binding.root,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
+        }
     }
 
     override fun end() {
-        (binding.root.parent as ViewGroup).removeView(binding.root)
+        game.context.runOnUiThread {
+            (binding.root.parent as ViewGroup).removeView(binding.root)
+        }
     }
 }

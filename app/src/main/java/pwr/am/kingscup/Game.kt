@@ -16,10 +16,10 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
             0->{
                 currentEvent.end()
                 currentEvent = DeckSetupEvent(this)
-                (currentEvent as DeckSetupEvent).deckInit(arrayOf(1, 2, 3, 4, 5, 6, 26, 13))
+                (currentEvent as DeckSetupEvent).deckInit(arrayOf(1, 1, 2, 3, 4, 5, 6, 26, 13))
                 currentEvent.start()
             }
-            //./adb shell input keyevent 8
+            // adb shell input keyevent 85
             1->{
                 currentEvent.end()
                 currentEvent = ShuffleEvent(this)
@@ -30,7 +30,7 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
             2->{
                 currentEvent.end()
                 currentEvent = DrawEvent(this)
-                (currentEvent as DrawEvent).setIndex(1)
+                (currentEvent as DrawEvent).setCard(1)
                 currentEvent.start()
             }
             // adb shell input keyevent 10
@@ -52,7 +52,7 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
             5->{
                 currentEvent.end()
                 currentEvent = RemoveCardEvent(this)
-                (currentEvent as RemoveCardEvent).setIndex(1)
+                (currentEvent as RemoveCardEvent).setCard(1)
                 currentEvent.start()
             }
             // adb shell input keyevent 13
@@ -92,13 +92,21 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
                 ))
                 currentEvent.start()
             }
+            // adb shell input keyevent 16
+            9->{
+                currentEvent.end()
+                currentEvent = TextInputEvent(this)
+                (currentEvent as TextInputEvent).setButtonText("Example")
+                (currentEvent as TextInputEvent).setHint("type here")
+                (currentEvent as TextInputEvent).start()
+            }
         }
     }
 
     //TODO implement database listeners and game logic linked to listeners
 
     fun respond(key : String, value : Any){
-        if(key == "time"){
+        if(currentEvent is AccelerationEvent){
             additionalEvent.end()
             currentEvent.end()
             currentEvent = InfoEvent(this)
@@ -110,21 +118,19 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
                 }
             }
             currentEvent.start()
-        }else if(key == "player"){
+        }else if(currentEvent is PlayerChooseEvent){
             currentEvent.end()
             currentEvent = InfoEvent(this)
             (currentEvent as InfoEvent).setText("Chosen player with id: " + (value as String))
             currentEvent.start()
-        }else if(key == "done"){
-            if(currentEvent is ShuffleEvent){
-                currentEvent.end()
-                currentEvent = DrawEvent(this)
-                (currentEvent as DrawEvent).setIndex(1)
-                currentEvent.start()
-            }
-            if(currentEvent is DrawEvent){
-                currentEvent.end()
-            }
+        }else if(currentEvent is ShuffleEvent){
+            currentEvent.end()
+            currentEvent = DrawEvent(this)
+            (currentEvent as DrawEvent).setCard(1)
+            currentEvent.start()
+        } else if(currentEvent is DrawEvent){
+            currentEvent.end()
         }
+
     }
 }

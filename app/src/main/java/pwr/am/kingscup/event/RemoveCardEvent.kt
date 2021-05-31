@@ -11,6 +11,15 @@ class RemoveCardEvent(game: Game) : Event(game) {
         index = i
     }
 
+    fun setCard(id : Int){
+        for(i in 0 .. game.drawables.lastIndex){
+            if(game.drawables[i].id == id){
+                index = i
+                break
+            }
+        }
+    }
+
     override fun start() {
         if(index == 0) index = game.drawables.lastIndex
         game.drawables[index].animate(

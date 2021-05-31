@@ -17,16 +17,20 @@ class InfoEvent(game: Game): Event(game) {
     }
 
     override fun start() {
-        binding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
-        binding.button.visibility = View.INVISIBLE
-        binding.textView.text = text
-        game.context.addContentView(
-            binding.root,
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        )
+        game.context.runOnUiThread {
+            binding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
+            binding.button.visibility = View.INVISIBLE
+            binding.textView.text = text
+            game.context.addContentView(
+                binding.root,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
+        }
     }
 
     override fun end() {
-        (binding.root.parent as ViewGroup).removeView(binding.root)
+        game.context.runOnUiThread {
+            (binding.root.parent as ViewGroup).removeView(binding.root)
+        }
     }
 }

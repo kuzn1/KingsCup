@@ -28,17 +28,21 @@ class ShuffleEvent(game : Game) : Event(game) {
         }
         if(clickable) {
             reminderAnimation(game.drawables.last())
-            game.context.glView.setOnClickListener {
-                game.respond("done", true)
-                game.context.glView.setOnClickListener {}
-                clickable = false
+            game.context.runOnUiThread {
+                game.context.glView.setOnClickListener {
+                    game.respond("done", true)
+                    game.context.glView.setOnClickListener {}
+                    clickable = false
+                }
             }
         }
     }
 
     override fun end() {
         if (clickable) {
-            game.context.glView.setOnClickListener {}
+            game.context.runOnUiThread {
+                game.context.glView.setOnClickListener {}
+            }
             clickable = false
         }
     }

@@ -3,17 +3,17 @@ package pwr.am.kingscup.event
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import pwr.am.kingscup.Game
-import pwr.am.kingscup.databinding.InfoViewBinding
+import pwr.am.kingscup.databinding.TextInputViewBinding
 
-class InfoAcceptEvent(game: Game): Event(game) {
+class TextInputEvent(game: Game): Event(game) {
 
-    private lateinit var binding: InfoViewBinding
+    private lateinit var binding: TextInputViewBinding
 
-    private var text = ""
+    private var hint = ""
     private var buttonText = ""
 
-    fun setText(t : String){
-        text = t
+    fun setHint(t : String){
+        hint = t
     }
 
     fun setButtonText(t : String){
@@ -22,16 +22,17 @@ class InfoAcceptEvent(game: Game): Event(game) {
 
     override fun start() {
         game.context.runOnUiThread {
-            binding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
-            binding.textView.text = text
+            binding = TextInputViewBinding.inflate(LayoutInflater.from(game.context))
+            binding.editText.hint = hint
             binding.button.text = buttonText
             game.context.addContentView(
                 binding.root,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
             binding.button.setOnClickListener {
-                game.respond("done", true)
                 binding.button.isEnabled = false
+                binding.editText.isEnabled = false
+                game.respond("text", binding.editText.text.toString())
             }
         }
     }
