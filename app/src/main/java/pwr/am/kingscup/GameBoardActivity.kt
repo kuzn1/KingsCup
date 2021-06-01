@@ -50,7 +50,14 @@ class GameBoardActivity : Activity() {
         glView = OpenGLView(this)
         setContentView(glView)
         glView.drawables.add(Background())
-        game = Game(this, glView.drawables)
+        //game = Game(this, glView.drawables)
+
+        playerLogic = PlayerLogic(gameKey, playerKey, this, glView.drawables)
+        playerLogic.addListenerToPlayers()
+        playerLogic.getPlayerGender()
+        playerLogic.addListenerToGameData()
+        playerLogic.setupDeck()
+
     }
 
     override fun onPause() {
@@ -66,7 +73,7 @@ class GameBoardActivity : Activity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(6<keyCode && keyCode<17)
             GlobalScope.launch{
-                game.start(keyCode-7)
+                //game.start(keyCode-7)
             }
         return super.onKeyDown(keyCode, event)
     }

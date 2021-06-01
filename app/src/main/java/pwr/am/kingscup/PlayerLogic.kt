@@ -1,45 +1,99 @@
 package pwr.am.kingscup
 
+import android.util.Log
+import android.util.Pair
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlin.random.Random.Default.nextInt
+import pwr.am.kingscup.event.*
+import pwr.am.kingscup.render.Drawable
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
+import kotlin.random.Random
 
-class PlayerLogic(var gameKey: String, val playerKey: String, ) {
+class PlayerLogic(
+    var gameKey: String,
+    val playerKey: String,
+    val context: GameBoardActivity,
+    val drawables: ArrayList<Drawable>
+) {
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")
     private var gameTick = 1
     private var gender = ""
-    private lateinit var listenerToGameData: ChildEventListener
+    private var current_card_id = 0
+    private lateinit var listenerToGameData: ValueEventListener
+    private lateinit var listenerToPlayers: ChildEventListener
+    private var currentEvent: Event = DeckSetupEvent(this)
+    private var cardEvent: Event = DeckSetupEvent(this)
+    private var playerArray = ArrayList<Pair<String, String>>()
+    private var pickedPlayer = ""
 
     //todo player Listener
     //todo disconnect
 
-
-    private fun sendResponse(data: String, additionalData: String) {
+    private fun sendResponse(
+        data: String,
+        additionalData: String,
+        additionalData2: String? = null
+    ) {
         referenceGames.child(gameKey).child("responses").push()
-            .setValue(GameLogic.Response(playerKey, gameTick, data, additionalData))
+            .setValue(
+                GameLogic.Response(
+                    playerKey,
+                    gameTick,
+                    data,
+                    additionalData,
+                    additionalData2
+                )
+            )
     }
 
-
-    //todo remove  Listener
-    fun addListenerToGameData() {
-        referenceGames.child(gameKey).child("gamedata")
+    fun addListenerToPlayers() {
+        listenerToPlayers = referenceGames.child(gameKey).child("players")
             .addChildEventListener(object : ChildEventListener {
-                override fun onCancelled(error: DatabaseError) {}
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                override fun onCancelled(error: DatabaseError) {}
+
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    playerArray.add(
+                        Pair(
+                            snapshot.key.toString(),
+                            snapshot.child("name").value.toString()
+                        )
+                    )
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    if (snapshot.key.toString() == playerKey) {
+                        //TODO END CLIENT
+                    }
+                    for (player in playerArray) {
+                        if (player.first == snapshot.key.toString())
+                            playerArray.remove(player)
+                    }
+                }
+            })
+    }
+
+    fun addListenerToGameData() {
+        listenerToGameData = referenceGames.child(gameKey).child("gamedata")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.e("POGO", snapshot.toString())
                     if (gameTick < (snapshot.child("server_tick").value as Long).toInt()) {
                         gameTick = (snapshot.child("server_tick").value as Long).toInt()
                         handleServerUpdate(snapshot)
                     }
                 }
 
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onChildRemoved(snapshot: DataSnapshot) {}
+                override fun onCancelled(error: DatabaseError) {}
             })
     }
 
@@ -50,125 +104,278 @@ class PlayerLogic(var gameKey: String, val playerKey: String, ) {
             }
     }
 
+    fun setupDeck() {
+        currentEvent = DeckSetupEvent(this)
+        // (currentEvent as DeckSetupEvent).deckInit(arrayOf(1, 1, 2, 3, 4, 5, 6, 26, 13))
+        (currentEvent as DeckSetupEvent).deckInit(arrayOf(
+            11, 24, 37, 50,
+            3, 16, 29, 42,
+            6, 19, 32, 45 ,
+            1, 14, 27, 40,
+            0, 13, 26, 39,
+            2, 15, 28, 41,
+            4, 17, 30, 43,
+            5, 18, 31, 44,
+            7, 20, 33, 46,
+            12, 25, 38, 51))
+        currentEvent.start()
+    }
+
     fun handleServerUpdate(snapshot: DataSnapshot) {
         val current_player_id = snapshot.child("current_player_id").value.toString()
-        val current_card_id = (snapshot.child("current_card_id").value as Long).toInt()
+        current_card_id = (snapshot.child("current_card_id").value as Long).toInt()
         val game_status = snapshot.child("game_status").value.toString()
+
+        currentEvent.end()
         when (game_status) {
             "DrawCard" -> {
                 if (current_player_id == playerKey) {
-                    //todo Shuffle_Event(True);
-                    //todo on result sendResponse("Drawn", "")
+
+                    currentEvent = ShuffleEvent(this)
+                    (currentEvent as ShuffleEvent).enableDraw()
+                    currentEvent.start()
                 }
             }
             "CardAction" -> {
-                //todo Draw_Event(id);
-                //TODO MAYBE WE WAIT FOR ANIMATION TO FINISH IDK
+                currentEvent = DrawEvent(this)
+                //todo
+                (currentEvent as DrawEvent).setCard(current_card_id)
                 when (current_card_id) {
                     //Ace - everyone without current player drinks
                     0, 13, 26, 39 -> {
                         if (current_player_id == playerKey) {
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("Other players drink")
                             sendResponse("CardActionDone", "")
-                            //todo event other players drink
                         } else {
-                            //todo Info_Accept_Event("You have to take a drink");
-                            //todo on result sendResponse("CardActionDone","")
+                            cardEvent = InfoAcceptEvent(this)
+                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
+                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setResponce("drink")
                         }
                     }
                     //Two - player chooses other player to take a drink
                     1, 14, 27, 40 -> {
                         if (current_player_id == playerKey) {
-                            //todo Info_Accept_Event("You have to choose other player to take a drink");
-                            //todo on result sendResponse("PickedPlayer", playerKey)
+                            cardEvent = PlayerChooseEvent(this)
+                            (cardEvent as PlayerChooseEvent).setPlayers(playerArray)
                         } else {
-                            //todo Info_Event("Player $current_player_id have to choose other player");
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player")
                         }
                     }
                     //Three - only current player drinks
                     2, 15, 28, 41 -> {
                         if (current_player_id == playerKey) {
-                            //todo Info_Accept_Event("You have to take a drink");
-                            //todo on result sendResponse("CardActionDone","")
+                            cardEvent = InfoAcceptEvent(this)
+                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
+                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setResponce("drink")
                         } else {
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
                             sendResponse("CardActionDone", "")
-                            //todo Info_Event("Player $current_player_id have to take a drink");
                         }
                     }
                     //Four - last player to touch the floor has to drink
                     3, 16, 29, 42 -> {
-                        //todo Four_Floor_Event();
-                        //todo on result sendResponse("Time", time)
+                        cardEvent = AccelerationEvent(this)
+                        (cardEvent as AccelerationEvent).setDown()
                     }
                     //Five - all males drinks
                     4, 17, 30, 43 -> {
                         if (gender == "male") {
-                            //todo Info_Accept_Event("You have to take a drink");
-                            //todo on result sendResponse("CardActionDone","")
+                            cardEvent = InfoAcceptEvent(this)
+                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
+                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setResponce("drink")
                         } else {
+                            cardEvent = InfoEvent(this)
+                            (currentEvent as InfoEvent).setText("Every male have to take a drink")
                             sendResponse("CardActionDone", "")
-                            //todo Info_Event("Every male have to take a drink");
                         }
                     }
                     //Six - all females drinks
                     5, 18, 31, 44 -> {
                         if (gender == "female") {
-                            //todo Info_Accept_Event("You have to take a drink");
-                            //todo on result sendResponse("CardActionDone","")
+                            cardEvent = InfoAcceptEvent(this)
+                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
+                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setResponce("drink")
                         } else {
                             sendResponse("CardActionDone", "")
-                            //todo  Info_Event("Every female have to take a drink");
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("Every female have to take a drink")
+                            sendResponse("CardActionDone", "")
                         }
                     }
                     //Seven - last person to raise their hand has to drink
                     6, 19, 32, 45 -> {
-                        //todo Seven_Haven_Event();
-                        //todo on result sendResponse("Time", time)
+                        cardEvent = AccelerationEvent(this)
+                        (cardEvent as AccelerationEvent).setUp()
                     }
                     //Eight - random players drinks
-                    //TODO we can do this on server but this is easier
                     7, 20, 33, 46 -> {
-                        if (nextInt(0, 2) == 1) {
-                            //todo Info_Accept_Event("You have to take a drink");
-                            //todo on result  sendResponse("CardActionDone", "")
+                        if (Random.nextInt(0, 2) == 1) {
+                            cardEvent = InfoAcceptEvent(this)
+                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
+                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setResponce("drink")
                         } else {
                             sendResponse("CardActionDone", "")
-                            //todo Info_Event("You where lucky :)");
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("You where lucky :)")
+                            sendResponse("CardActionDone", "")
                         }
                     }
                     //Queen - pick player and ask him question
                     11, 24, 37, 50 -> {
                         if (current_player_id == playerKey) {
-                            //todo Info_Accept_Event("Chose player have to ask a question");
-                            //todo Player_Choose_Event(playerList);
-                            //todo Text_Input_Event();
-                            //todo on result sendResponse("PickedPlayer", "playerKey|question")
+                            cardEvent = PlayerChooseEvent(this)
+                            (cardEvent as PlayerChooseEvent).setPlayers(playerArray)
+                            (cardEvent as PlayerChooseEvent).setKey("text")
                         } else {
-                            //todo Info_Event("Player $current_player_id have to choose other player");
+                            cardEvent = InfoEvent(this)
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player to answer question")
                         }
                     }
                     //King - all players finish drinks
-                    12, 25, 38, 51  ->{
-                        //todo Info_Accept_Event("You have to finish your drink");
-                        sendResponse("CardActionDone", "")
+                    12, 25, 38, 51 -> {
+                        cardEvent = InfoAcceptEvent(this)
+                        (cardEvent as InfoAcceptEvent).setText("You have to finish your drink")
+                        (cardEvent as InfoAcceptEvent).setButtonText("I finish")
+                        (cardEvent as InfoAcceptEvent).setResponce("drink")
                     }
                 }
+                currentEvent.start()
             }
             "Drinks" -> {
                 if (playerKey == snapshot.child("players_to_drink").value.toString()) {
-                    //todo Info_Accept_Event("You have to take a drink");
-                    //todo on result sendResponse("CardActionDone", "")
+                    currentEvent = InfoAcceptEvent(this)
+                    (currentEvent as InfoAcceptEvent).setText("You have to take a drink")
+                    (currentEvent as InfoAcceptEvent).setButtonText("I finish")
+                    (currentEvent as InfoAcceptEvent).setResponce("drink")
                 } else {
-                    //todo Info_Event("Player $current_player_id have to take a drink");
+                    currentEvent = InfoEvent(this)
+                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
+
+                }
+                currentEvent.start()
+            }
+            "Question" -> {
+                if (playerKey == snapshot.child("selected_player_for_question").value.toString()) {
+                    currentEvent.end()
+                    currentEvent = TextInputEvent(this)
+                    (currentEvent as TextInputEvent).setHint(snapshot.child("question").value.toString())
+                    (currentEvent as TextInputEvent).setButtonText("Answer")
+                    (currentEvent as TextInputEvent).setKey("answer")
+                    (currentEvent as TextInputEvent).start()
+
+                } else {
+                    currentEvent = InfoEvent(this)
+                    (currentEvent as InfoEvent).setText(
+                        "Player ${
+                            playerArray.find {
+                                it.first == snapshot.child(
+                                    "selected_player_for_question"
+                                ).value.toString()
+                            }?.second
+                        } answers question"
+                    )
+                    currentEvent.start()
                 }
             }
-            "Question" ->{
-                //todo
-                //todo Info_Accept_Event("QuestionAndResponse!");
+            "Answer" -> {
+                currentEvent = InfoEvent(this)
+                (currentEvent as InfoEvent).setText("Question: ${snapshot.child("question").value.toString()}\n Answer: ${snapshot.child("answer").value.toString()}")
+                currentEvent.start()
+                Timer("task", false).schedule(5000) {
+                    sendResponse("CardActionDone", "")
+                }
             }
 
             "AcceptThisRound" -> {
-                //todo Info_Accept_Event("Done!");
-                //todo on result sendResponse("Accepted", "")
+                currentEvent = InfoAcceptEvent(this)
+                (currentEvent as InfoAcceptEvent).setText("Ready for next?")
+                (currentEvent as InfoAcceptEvent).setButtonText("Yes")
+                (currentEvent as InfoAcceptEvent).setResponce("accept")
+                currentEvent.start()
+            }
+        }
+    }
+
+
+    //function called by events
+    fun respond(key: String, value: Any) {
+        when (currentEvent) {
+            is DeckSetupEvent -> {
+                sendResponse("Join", "")
+            }
+            is ShuffleEvent -> {
+                currentEvent.end()
+                sendResponse("Drawn", "")
+            }
+            is DrawEvent -> {
+                currentEvent.end()
+                currentEvent = cardEvent
+                if (currentEvent is AccelerationEvent) {
+                    currentEvent.start()
+                } else {
+                    Timer("task", false).schedule(2000) {
+                        currentEvent.start()
+                    }
+                }
+            }
+            is InfoAcceptEvent -> {
+                if (key == "drink") {
+                    sendResponse("CardActionDone", "")
+                    currentEvent.end()
+                }
+                if (key == "accept") {
+                    currentEvent.end()
+                    currentEvent = RemoveCardEvent(this)
+                    (currentEvent as RemoveCardEvent).setCard(current_card_id)
+                    currentEvent.start()
+                    sendResponse("Accepted", "")
+                }
+            }
+            is PlayerChooseEvent -> {
+                if (key == "player") {
+                    currentEvent.end()
+                    sendResponse("PickedPlayer", value.toString())
+                } else if (key == "text") {
+                    pickedPlayer = value.toString()
+                    currentEvent.end()
+                    currentEvent = TextInputEvent(this)
+                    (currentEvent as TextInputEvent).setButtonText("Write question")
+                    (currentEvent as TextInputEvent).setHint("")
+                    (currentEvent as TextInputEvent).start()
+                }
+            }
+            is TextInputEvent -> {
+                if (key == "text") {
+                    currentEvent.end()
+                    sendResponse("PickedPlayer", pickedPlayer, value.toString())
+                } else if (key == "answer") {
+                    currentEvent.end()
+                    sendResponse("Answer", value.toString())
+                }
+            }
+
+            is AccelerationEvent -> {
+                Log.e("AccelerationEvent", value.toString())
+                currentEvent.end()
+                currentEvent = InfoEvent(this)
+                with(value as Long) {
+                    if (this == 0L) {
+                        (currentEvent as InfoEvent).setText("Wrong Move :(")
+                        sendResponse("Time", "1111111111")
+                    } else {
+                        sendResponse("Time", value.toString())
+                        (currentEvent as InfoEvent).setText("Your time: " + this.toString() + "ms")
+                    }
+                }
+                currentEvent.start()
             }
         }
     }

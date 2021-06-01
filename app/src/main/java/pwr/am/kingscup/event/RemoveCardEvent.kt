@@ -1,9 +1,10 @@
 package pwr.am.kingscup.event
 
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.render.Animation
 
-class RemoveCardEvent(game: Game) : Event(game) {
+class RemoveCardEvent(game: PlayerLogic) : Event(game) {
     private var index = 0
     private var done = false
 

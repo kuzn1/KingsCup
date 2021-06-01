@@ -6,10 +6,12 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
+import android.util.Log
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import kotlin.math.absoluteValue
 
-class AccelerationEvent(game: Game) : Event(game), SensorEventListener {
+class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
 
     private var state = 1
     private var time = 0L

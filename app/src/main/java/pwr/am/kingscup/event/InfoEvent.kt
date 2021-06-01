@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.databinding.InfoViewBinding
 
-class InfoEvent(game: Game): Event(game) {
+class InfoEvent(game: PlayerLogic): Event(game) {
 
-    private lateinit var binding: InfoViewBinding
+    private var binding: InfoViewBinding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
 
     private var text = ""
 
@@ -18,7 +19,7 @@ class InfoEvent(game: Game): Event(game) {
 
     override fun start() {
         game.context.runOnUiThread {
-            binding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
+            //binding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
             binding.button.visibility = View.INVISIBLE
             binding.textView.text = text
             game.context.addContentView(
@@ -30,7 +31,8 @@ class InfoEvent(game: Game): Event(game) {
 
     override fun end() {
         game.context.runOnUiThread {
-            (binding.root.parent as ViewGroup).removeView(binding.root)
+            if (binding.root.parent != null)
+                (binding.root.parent as ViewGroup).removeView(binding.root)
         }
     }
 }

@@ -3,9 +3,10 @@ package pwr.am.kingscup.event
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.databinding.TextInputViewBinding
 
-class TextInputEvent(game: Game): Event(game) {
+class TextInputEvent(game: PlayerLogic): Event(game) {
 
     private lateinit var binding: TextInputViewBinding
 
@@ -20,6 +21,11 @@ class TextInputEvent(game: Game): Event(game) {
         buttonText = t
     }
 
+    private var key = "text"
+    fun setKey(key :String){
+        this.key = key
+    }
+
     override fun start() {
         game.context.runOnUiThread {
             binding = TextInputViewBinding.inflate(LayoutInflater.from(game.context))
@@ -32,14 +38,15 @@ class TextInputEvent(game: Game): Event(game) {
             binding.button.setOnClickListener {
                 binding.button.isEnabled = false
                 binding.editText.isEnabled = false
-                game.respond("text", binding.editText.text.toString())
+                game.respond(key, binding.editText.text.toString())
             }
         }
     }
 
     override fun end() {
         game.context.runOnUiThread {
-            (binding.root.parent as ViewGroup).removeView(binding.root)
+            if (binding.root.parent != null)
+                (binding.root.parent as ViewGroup).removeView(binding.root)
         }
     }
 }

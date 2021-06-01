@@ -3,12 +3,15 @@ package pwr.am.kingscup
 import pwr.am.kingscup.event.*
 import pwr.am.kingscup.render.Drawable
 import kotlin.collections.ArrayList
+import android.util.Pair
 class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>){
 
-    private var currentEvent : Event = DeckSetupEvent(this)
-    private var additionalEvent : Event = DeckSetupEvent(this)
+
+    //private var currentEvent : Event = DeckSetupEvent(this)
+    //private var additionalEvent : Event = DeckSetupEvent(this)
 
 
+    /*
     //placeholder just to test all events
     fun start(k : Int){
         when(k){
@@ -131,6 +134,7 @@ class Game (val context : GameBoardActivity, val drawables : ArrayList<Drawable>
         } else if(currentEvent is DrawEvent){
             currentEvent.end()
         }
-
     }
+
+     */
 }

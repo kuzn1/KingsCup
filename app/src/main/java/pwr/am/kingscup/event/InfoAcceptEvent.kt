@@ -3,17 +3,23 @@ package pwr.am.kingscup.event
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.databinding.InfoViewBinding
 
-class InfoAcceptEvent(game: Game): Event(game) {
+class InfoAcceptEvent(game: PlayerLogic): Event(game) {
 
     private lateinit var binding: InfoViewBinding
 
     private var text = ""
     private var buttonText = ""
+    private var key = "done"
 
     fun setText(t : String){
         text = t
+    }
+
+    fun setResponce(key : String){
+        this.key = key
     }
 
     fun setButtonText(t : String){
@@ -30,7 +36,7 @@ class InfoAcceptEvent(game: Game): Event(game) {
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
             binding.button.setOnClickListener {
-                game.respond("done", true)
+                game.respond(key, true)
                 binding.button.isEnabled = false
             }
         }
@@ -38,7 +44,8 @@ class InfoAcceptEvent(game: Game): Event(game) {
 
     override fun end() {
         game.context.runOnUiThread {
-            (binding.root.parent as ViewGroup).removeView(binding.root)
+            if(binding.root.parent != null)
+                (binding.root.parent as ViewGroup).removeView(binding.root)
         }
     }
 }

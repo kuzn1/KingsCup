@@ -184,7 +184,8 @@ class GameLogic() : Service() {
                         snapshot.child("playerKey").value as String?,
                         (snapshot.child("server_tick").value as Long).toInt(),
                         snapshot.child("data").value as String?,
-                        snapshot.child("additionalData").value as String?
+                        snapshot.child("additionalData").value as String?,
+                        snapshot.child("additionalData2").value as String?
                     )
                     responseToAction(response)
                 }
@@ -264,8 +265,12 @@ class GameLogic() : Service() {
 
         //pick card
         val temp = nextInt(0, cardArray.size)
+        //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         currentCard = cardArray[temp].id
         setCurrentCardId(currentCard)
+        //currentCard = 11
+        //setCurrentCardId(11)
+
         cardArray.removeAt(temp)
 
         //set new game status
@@ -361,11 +366,11 @@ class GameLogic() : Service() {
                         }
                         if (temp) {
                             Log.e("ASDASD", "All times collected")
-                            var max = responseArray[0].additionalData?.toFloat()
+                            var max = responseArray[0].additionalData?.toLong()
                             playerWithMaxTime = responseArray[0].playerKey.toString()
                             for (i in responseArray) {
-                                if (i.additionalData?.toInt()!! > max!!) {
-                                    max = i.additionalData.toFloat()
+                                if (i.additionalData?.toLong()!! > max!!) {
+                                    max = i.additionalData.toLong()
                                     playerWithMaxTime = i.playerKey.toString()
                                 }
                             }
@@ -399,24 +404,46 @@ class GameLogic() : Service() {
             -> {
                 Log.e("ASDASD", "Queen")
                 if (cardState == 0) {
+                    responseArray.clear()
                     if (response.data == "PickedPlayer" && response.playerKey == playerArray[currentPlayer].playerKey) {
                         cardState = 1
                         selectedPlayer = response.additionalData.toString()
                         referenceGames.child(gameKey).child("gamedata")
                             .child("selected_player_for_question").setValue(selectedPlayer)
+                        referenceGames.child(gameKey).child("gamedata")
+                            .child("question").setValue(response.additionalData2.toString())
                         setNewGameStatus("Question")
                         updateGameTick()
                         return
                     }
                 }
                 if (cardState == 1) {
-                    if (response.data == "CardActionDone" && response.playerKey == selectedPlayer) {
+                    if (response.data == "Answer" && response.playerKey == selectedPlayer) {
+                        cardState = 2
+                        referenceGames.child(gameKey).child("gamedata")
+                            .child("answer").setValue(response.additionalData.toString())
+                        setNewGameStatus("Answer")
+                        updateGameTick()
+                        return
+                    }
+                }
+                if (cardState == 2 ){
+                    responseArray.add(response)
+                    playerArray.find { response.playerKey == it.playerKey }?.responded = true
+                    var temp = true
+                    for (player in playerArray) {
+                        if (player.responded == false && player.isOnline == true) {
+                            temp = false
+                        }
+                    }
+                    if (temp) {
                         cardState = 0
+                        Log.e("ASDASD", "card action done")
+                        playerArray.forEach { it.responded = false }
+                        responseArray.clear()
                         currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
                         setNewGameStatus("AcceptThisRound")
                         updateGameTick()
-                        selectedPlayer = ""
-                        return
                     }
                 }
             }
@@ -427,7 +454,7 @@ class GameLogic() : Service() {
 
         currentPlayer = -1
         addListenerToPlayers()
-        //todo get cards from server currendly generates all
+        //todo get cards from server currently generates all
         for (i in 0..7) {
             val card1 = Card(i, 1)
             val card2 = Card(i + 13, 1)
@@ -457,7 +484,8 @@ class GameLogic() : Service() {
         val playerKey: String? = null,
         val server_tick: Int = -1,
         val data: String? = null,
-        val additionalData: String? = null
+        val additionalData: String? = null,
+        val additionalData2: String? = null
     )
 
     private data class Player(

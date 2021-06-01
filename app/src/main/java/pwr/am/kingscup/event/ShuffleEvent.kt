@@ -2,11 +2,12 @@ package pwr.am.kingscup.event
 
 import android.os.SystemClock
 import pwr.am.kingscup.Game
+import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Drawable
 import kotlin.random.Random
 
-class ShuffleEvent(game : Game) : Event(game) {
+class ShuffleEvent(game : PlayerLogic) : Event(game) {
     private var clickable = false
 
     fun enableDraw(){
