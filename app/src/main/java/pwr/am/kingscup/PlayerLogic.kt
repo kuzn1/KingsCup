@@ -137,7 +137,6 @@ class PlayerLogic(
             }
             "CardAction" -> {
                 currentEvent = DrawEvent(this)
-                //todo
                 (currentEvent as DrawEvent).setCard(current_card_id)
                 when (current_card_id) {
                     //Ace - everyone without current player drinks

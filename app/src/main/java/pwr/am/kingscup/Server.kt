@@ -10,7 +10,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
-class Server() {
+class Server()  {
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")
@@ -97,19 +97,15 @@ class Server() {
         val current_card_id: Int? = null,
         val current_player_id: Int? = null,
         val player_count : Int? = 0
-        //val addidtional_data: String? = null
-        //TODO
     )
 
     data class Game(
         val gameCode: String? = null,
         val gamedata: Gamedata? = null,
-        //TODO
     )
 
     data class Card (
         val id : Int,
         val count : Int
-        //TODO maybe add text
     )
 }

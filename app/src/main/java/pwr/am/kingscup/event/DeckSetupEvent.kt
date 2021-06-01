@@ -6,7 +6,7 @@ import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Card
 
 class DeckSetupEvent(game : PlayerLogic) : Event(game) {
-    private lateinit var deck : Array<Int>
+    private lateinit var deck : ArrayList<Int>
     private var fastEnd = false
 
     fun deckInit(cards : ArrayList<Int>){
