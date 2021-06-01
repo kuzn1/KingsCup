@@ -106,19 +106,18 @@ class PlayerLogic(
 
     fun setupDeck() {
         currentEvent = DeckSetupEvent(this)
-        // (currentEvent as DeckSetupEvent).deckInit(arrayOf(1, 1, 2, 3, 4, 5, 6, 26, 13))
-        (currentEvent as DeckSetupEvent).deckInit(arrayOf(
-            11, 24, 37, 50,
-            3, 16, 29, 42,
-            6, 19, 32, 45 ,
-            1, 14, 27, 40,
-            0, 13, 26, 39,
-            2, 15, 28, 41,
-            4, 17, 30, 43,
-            5, 18, 31, 44,
-            7, 20, 33, 46,
-            12, 25, 38, 51))
-        currentEvent.start()
+
+        val referenceCards = referenceGames.child(gameKey).child("card_set")
+
+        referenceCards.get().addOnSuccessListener{
+            val cardIdList : ArrayList<Int> = ArrayList()
+            for (i in 0..51){
+                if((it.child(i.toString()).value as Long).toInt()>0)
+                    cardIdList.add(i)
+            }
+            (currentEvent as DeckSetupEvent).deckInit(cardIdList)
+            currentEvent.start()
+        }
     }
 
     fun handleServerUpdate(snapshot: DataSnapshot) {

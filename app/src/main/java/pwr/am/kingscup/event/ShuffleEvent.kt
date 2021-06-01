@@ -1,7 +1,6 @@
 package pwr.am.kingscup.event
 
 import android.os.SystemClock
-import pwr.am.kingscup.Game
 import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Drawable
@@ -24,8 +23,8 @@ class ShuffleEvent(game : PlayerLogic) : Event(game) {
                 300,
                 false
             ))
-            game.drawables[i].animate(Animation(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,1000+300*i.toLong(), false))
-            game.drawables[i].animate(Animation(0.0f,0.0f,-6.0f,0.0f,180.0f,0.0f,300))
+            game.drawables[i].animate(Animation(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,1000+150*i.toLong(), false))
+            game.drawables[i].animate(Animation(0.0f,0.0f,-6.0f,0.0f,180.0f,0.0f,150))
         }
         if(clickable) {
             reminderAnimation(game.drawables.last())

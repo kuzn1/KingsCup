@@ -32,6 +32,7 @@ class Server() {
 
         addListenerToPlayers()
         makeGamePublic()
+        Log.wtf("Server", "Game created")
     }
     private fun generateRoomCode(){
         val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZ"
@@ -82,6 +83,8 @@ class Server() {
         openGames.child(gameCode).removeValue()
         referenceGames.child(gameKey).removeValue()
     }
+
+    fun getPlayerCount(): Int = playerCount
 
     data class OpenGame(
         val gameCode : String? = null,

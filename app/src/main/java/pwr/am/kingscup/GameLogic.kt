@@ -454,30 +454,16 @@ class GameLogic() : Service() {
 
         currentPlayer = -1
         addListenerToPlayers()
-        //todo get cards from server currently generates all
-        for (i in 0..7) {
-            val card1 = Card(i, 1)
-            val card2 = Card(i + 13, 1)
-            val card3 = Card(i + 26, 1)
-            val card4 = Card(i + 39, 1)
-            cardArray.add(card1)
-            cardArray.add(card2)
-            cardArray.add(card3)
-            cardArray.add(card4)
-        }
-        for (i in 11..12) {
-            val card1 = Card(i, 1)
-            val card2 = Card(i + 13, 1)
-            val card3 = Card(i + 26, 1)
-            val card4 = Card(i + 39, 1)
-            cardArray.add(card1)
-            cardArray.add(card2)
-            cardArray.add(card3)
-            cardArray.add(card4)
-        }
-        cardArray
 
-        addListenerToResponses()
+        val referenceCards = referenceGames.child(gameKey).child("card_set")
+
+        referenceCards.get().addOnSuccessListener{
+            for (i in 0..51){
+                if((it.child(i.toString()).value as Long).toInt()>0)
+                    cardArray.add(Card(i, (it.child(i.toString()).value as Long).toInt()))
+            }
+            addListenerToResponses()
+        }
     }
 
     class Response(

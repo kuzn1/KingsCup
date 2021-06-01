@@ -56,18 +56,22 @@ class LobbyActivity : Activity() {
     }
 
     fun start() {
-        Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
+        if(server.getPlayerCount()>1){
+            Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
 
-        if (owner) {
-            server.makeGamePrivate()
+            if (owner) {
+                server.makeGamePrivate()
+            }
+            lobby.removeListeners()
+
+            val intent = Intent(this, GameBoardActivity::class.java)
+            intent.putExtra("gameKey", lobby.gameKey)
+            intent.putExtra("OWNER", owner)
+            intent.putExtra("playerKey", lobby.playerKey)
+            startActivityForResult(intent, 1)
+        }else{
+            Toast.makeText(applicationContext, "NOT ENOUGH PLAYERS", Toast.LENGTH_SHORT).show()
         }
-        lobby.removeListeners()
-
-        val intent = Intent(this, GameBoardActivity::class.java)
-        intent.putExtra("gameKey", lobby.gameKey)
-        intent.putExtra("OWNER", owner)
-        intent.putExtra("playerKey", lobby.playerKey)
-        startActivityForResult(intent, 1)
     }
 
     fun onClick(view: View) {

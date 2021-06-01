@@ -9,7 +9,7 @@ class DeckSetupEvent(game : PlayerLogic) : Event(game) {
     private lateinit var deck : Array<Int>
     private var fastEnd = false
 
-    fun deckInit(cards : Array<Int>){
+    fun deckInit(cards : ArrayList<Int>){
         deck = cards
     }
 
