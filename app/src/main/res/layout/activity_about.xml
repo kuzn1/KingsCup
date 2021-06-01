@@ -54,7 +54,10 @@
                     android:id="@+id/textView1"
                     app:layout_constraintTop_toBottomOf="@+id/textView"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:linksClickable="true"
+                    android:autoLink="web"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

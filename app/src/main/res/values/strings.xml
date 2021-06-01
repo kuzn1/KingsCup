@@ -18,10 +18,6 @@
     <string name="devCode">DEVDEV</string>
     <string name="kick">Kick</string>
     <string name="nickname">Nickname</string>
-    <string name="about_text">
-    <!--todo write about string-->
-        \nAbout\n\n\n\n\n\n\n\nIt will be a cool app\n\n You will see\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWIP btw
-    </string>
     <string name="nick">nick</string>
     <string name="default_gender">Default Gender</string>
     <string name="card_texture">Card texture</string>
@@ -29,6 +25,36 @@
     <string name="choose">Choose</string>
     <string name="go_to_lobby">Go to lobby</string>
     <string name="game_ended">Game Ended</string>
+    <string name="about_text">
+        About
+        \n\n\n\n
+        This is a mobile implementation of Kings Cup card game.
+        You can play this party game without need to directly meet with your friends.
+        Now you can join them via any communication platform and enjoy your kings cup game!
+        \n\n\n\n\n
+        Link to original game on Wiki
+        \n
+        en.wikipedia.org/wiki/Kings_(game)
+        \n\n\n
+        You can also visit our github project page
+        \n
+        github.com/kuzn1/KingsCup
+    </string>
+    <string-array name="card_name">
+        <item>Ace Save</item>
+        <item>Two for You</item>
+        <item>Three for Me</item>
+        <item>Four Floor</item>
+        <item>Five Guys</item>
+        <item>Six Chicks</item>
+        <item>Seven Heven</item>
+        <item>Eight Random</item>
+        <item>Nine WIP</item>
+        <item>Ten WIP</item>
+        <item>Jack WIP</item>
+        <item>Queen Question</item>
+        <item>Kings Cup</item>
+    </string-array>
     <string-array name="card_texture_name_array">
         <item>Default</item>
         <item>Dark</item>
@@ -39,8 +65,18 @@
         <item>High</item>
     </string-array>
     <string-array name="card_description_array">
-        <!--todo write card descriptions-->
-        <item>SAMPLE CARD DESCRIPTION</item>
-        <item>SAMPLE CARD DESCRIPTION NUMBER 2</item>
+        <item>Ace Safe\nEveryone except the person who drew a card has to take a drink</item>
+        <item>Two for You\nPerson who drew a card choose who will take a drink</item>
+        <item>Three for Me\nPerson who drew a card has to take a drink</item>
+        <item>Four Floor\nEveryone have to lower their phone to the ground as fast as possible. Worst time has to take a drink</item>
+        <item>Five Guys\nEvery male player has to take a drink</item>
+        <item>Six Chicks\nEvery female player has to take a drink</item>
+        <item>Seven Heaven\nEveryone have to rise their phone up as fast as possible. Worst time has to take a drink</item>
+        <item>Eight Random\nRandom person has to take a drink</item>
+        <item>Nine WIP</item>
+        <item>Ten WIP</item>
+        <item>Jack WIP</item>
+        <item>Queen Question\nPerson who drew a card choose player and question. He has answer or take a drink</item>
+        <item>Kings Cup\nEveryone has to finish their drink</item>
     </string-array>
 </resources>

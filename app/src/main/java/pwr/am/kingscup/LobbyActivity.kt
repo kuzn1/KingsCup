@@ -104,6 +104,14 @@ class LobbyActivity : Activity() {
                     ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 )
             }
+            binding.idTextView -> {
+                val intent = Intent()
+                intent.action = Intent.ACTION_SEND
+                intent.putExtra(Intent.EXTRA_TEXT, binding.idTextView.text.toString())
+                intent.type = "text/plain"
+
+                startActivity(Intent.createChooser(intent, null))
+            }
         }
     }
 

@@ -124,7 +124,8 @@
             android:text="@string/devCode" android:textSize="36sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.93"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:onClick="onClick"/>
 
     <TextView
             android:text="@string/playerCount"

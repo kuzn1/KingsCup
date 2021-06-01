@@ -24,11 +24,11 @@ class Server() {
     fun createGame(){
         generateRoomCode()
 
-        //TODO CreateCards
         val gameData = Gamedata(0,"waiting",0,0)
         val game = Game(gameCode , gameData)
         gameKey = referenceGames.push().key.toString()
         referenceGames.child(gameKey).setValue(game)
+        addCardsToGame()
 
         addListenerToPlayers()
         makeGamePublic()
@@ -39,7 +39,12 @@ class Server() {
             .map { charset.random() }
             .joinToString("")
     }
-    fun addCardsToGame(cards : ArrayList<Card>) {
+
+    private fun addCardsToGame() {
+        val cards = HashMap<String, Long>()
+        for(i in 0..51)
+            if(i<13 && i!=8 && i!=9 && i!=10) cards.put(i.toString(), 1)
+            else cards.put(i.toString(), 0)
         referenceGames.child(gameKey).child("card_set").setValue(cards)
     }
 

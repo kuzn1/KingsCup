@@ -52,10 +52,9 @@ class CardPagerAdapter(private val context: Context, private val cardIdList : Ar
 
         // todo change to asynchronous image loading (load every image using single RegionDecoder)
         if(cardBitmapArray[position] == null) {
-            val input = context.resources.openRawResource(cardResource)
+            val input = context.resources.openRawResource(+cardResource)
             val decoder = BitmapRegionDecoder.newInstance(input, false)
 
-            // todo get map position by given id
             val cardMapPosition = cardIdList[position]
             val x = (cardMapPosition%13)*cardWidth
             val y = (cardMapPosition/13)*cardHeight
@@ -68,8 +67,7 @@ class CardPagerAdapter(private val context: Context, private val cardIdList : Ar
         binding.cardImage.setImageBitmap(cardBitmapArray[position])
         binding.cardCover.setImageBitmap(coverBitmap)
 
-        // todo get description position by given id
-        val cardDescriptionPosition = 1
+        val cardDescriptionPosition = cardIdList[position]%13
         binding.cardDescription.text = context.resources.getStringArray(R.array.card_description_array)[cardDescriptionPosition]
 
         container.addView(binding.root)
