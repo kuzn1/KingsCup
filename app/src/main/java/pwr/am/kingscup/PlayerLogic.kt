@@ -189,7 +189,7 @@ class PlayerLogic(
                             (cardEvent as InfoAcceptEvent).setResponce("drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (currentEvent as InfoEvent).setText("Every male have to take a drink")
+                            (cardEvent as InfoEvent).setText("Every male have to take a drink")
                             sendResponse("CardActionDone", "")
                         }
                     }

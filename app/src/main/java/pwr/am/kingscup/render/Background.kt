@@ -6,7 +6,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
 
-class Background(): Drawable() {
+class Background(): Drawable(-1) {
 
     companion object{
         var shaderProgram : Int = 0

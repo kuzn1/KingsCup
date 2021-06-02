@@ -70,14 +70,6 @@ class GameBoardActivity : Activity() {
         glView.onResume()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if(6<keyCode && keyCode<17)
-            GlobalScope.launch{
-                //game.start(keyCode-7)
-            }
-        return super.onKeyDown(keyCode, event)
-    }
-
     override fun onDestroy() {
         stopService(Intent(this, GameLogic::class.java))
         super.onDestroy()

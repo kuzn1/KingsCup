@@ -34,6 +34,7 @@ class PlayerChooseEvent(game: PlayerLogic): Event(game) {
             for (player: Pair<String, String> in players) {
                 val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
                 row.nickName.text = player.second
+                row.nickName.textSize = 18f
                 row.kickButton.visibility = View.VISIBLE
                 row.kickButton.text = game.context.getString(R.string.choose)
                 row.kickButton.setOnClickListener{

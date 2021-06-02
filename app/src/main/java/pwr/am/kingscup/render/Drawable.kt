@@ -2,12 +2,12 @@ package pwr.am.kingscup.render
 
 import java.util.*
 
-abstract class Drawable (){
+abstract class Drawable (var id : Int){
     protected var modelMatrixChange = true
     protected val modelMatrix = FloatArray(16)
     protected val position = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
     protected var animationQueue : Queue<Animation> = LinkedList()
-    var id = -1
+
     var deleteFlag = false
 
     fun move(dx : Float, dy: Float, dz : Float){

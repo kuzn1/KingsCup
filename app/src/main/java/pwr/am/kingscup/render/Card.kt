@@ -15,7 +15,7 @@ import android.opengl.Matrix
 import pwr.am.kingscup.R
 
 
-class Card(id : Int): Drawable() {
+class Card(id : Int): Drawable(id) {
     private var textureIndex : Int
 
     companion object{

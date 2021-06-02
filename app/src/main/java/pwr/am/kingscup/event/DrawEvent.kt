@@ -1,6 +1,5 @@
 package pwr.am.kingscup.event
 
-import pwr.am.kingscup.Game
 import pwr.am.kingscup.PlayerLogic
 import pwr.am.kingscup.render.Animation
 
@@ -15,7 +14,6 @@ class DrawEvent(game: PlayerLogic) : Event(game) {
         for(i in 0 .. game.drawables.lastIndex){
             if(game.drawables[i].id == id){
                 index = i
-                return
             }
         }
     }
@@ -31,7 +29,7 @@ class DrawEvent(game: PlayerLogic) : Event(game) {
 
     override fun end() {
         game.drawables[index].animate(
-            Animation(0.0f,0.0f,-1.7f, 0.0f,0.0f,0.0f,100)
+            Animation(0.0f,0.0f,-1.8f, 0.0f,0.0f,0.0f,100)
         )
     }
 }
