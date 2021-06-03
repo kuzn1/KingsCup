@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.lobby
 
 import android.app.Activity
 import android.content.Intent
@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.services.LobbyClient
 import pwr.am.kingscup.databinding.ActivityPlayerViewBinding
 import pwr.am.kingscup.databinding.PlayerViewRowBinding
 
@@ -23,7 +24,7 @@ class PlayerViewActivity : Activity() {
     private var referenceGames = database.getReference("games")
     private lateinit var listener: ChildEventListener
     private lateinit var gameKey: String
-    private lateinit var lobby: Lobby
+    private lateinit var lobbyClient: LobbyClient
     private lateinit var config : SharedPreferences
 
 
@@ -37,9 +38,9 @@ class PlayerViewActivity : Activity() {
         setContentView(binding.root)
 
         gameKey = intent.getStringExtra("gameKey").toString()
-        lobby = Lobby(gameKey)
-        lobby.playerKey = intent.getStringExtra("playerKey").toString()
-        lobby.addServerTickListener(this)
+        lobbyClient = LobbyClient(gameKey)
+        lobbyClient.playerKey = intent.getStringExtra("playerKey").toString()
+        lobbyClient.addServerTickListener(this)
 
         players = ArrayList()
         listener = referenceGames.child(gameKey)
@@ -58,7 +59,7 @@ class PlayerViewActivity : Activity() {
                         referenceGames.child(gameKey).child("players").removeEventListener(listener)
                         val intent = Intent()
                         intent.putExtra("result", "kick")
-                        lobby.removeServerTickListener()
+                        lobbyClient.removeServerTickListener()
                         setResult(RESULT_OK, intent)
                         finish()
                     }
@@ -96,7 +97,7 @@ class PlayerViewActivity : Activity() {
 
     fun back(view: View) {
         referenceGames.child(gameKey).child("players").removeEventListener(listener)
-        lobby.removeServerTickListener()
+        lobbyClient.removeServerTickListener()
         val intent = Intent()
         intent.putExtra("result", "back");
         this.setResult(RESULT_OK, intent)
@@ -105,7 +106,7 @@ class PlayerViewActivity : Activity() {
 
     override fun onBackPressed() {
         referenceGames.child(gameKey).child("players").removeEventListener(listener)
-        lobby.removeServerTickListener()
+        lobbyClient.removeServerTickListener()
         val intent = Intent()
         intent.putExtra("result", "back");
         this.setResult(RESULT_OK, intent)

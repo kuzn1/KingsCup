@@ -1,10 +1,11 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.menu
 
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import pwr.am.kingscup.R
 import pwr.am.kingscup.databinding.ActivityOptionsBinding
 
 class OptionsActivity : Activity() {
@@ -27,7 +28,7 @@ class OptionsActivity : Activity() {
     private fun initItems() {
         ArrayAdapter.createFromResource(
                 this,
-                R.array.card_texture_name_array,
+            R.array.card_texture_name_array,
                 android.R.layout.simple_spinner_item
             ).also{ adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.menu.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
             <intent-filter>
@@ -23,53 +23,53 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".JoinActivity"
+            android:name=".activity.menu.JoinActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".LobbyActivity"
+            android:name=".activity.lobby.LobbyActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".PlayerViewActivity"
+            android:name=".activity.lobby.PlayerViewActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".CardViewActivity"
+            android:name=".activity.lobby.CardViewActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".OptionsActivity"
+            android:name=".activity.menu.OptionsActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
-            android:name=".AboutActivity"
+            android:name=".activity.menu.AboutActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".GameBoardActivity"
+            android:name=".activity.game.GameBoardActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         </activity>
         <activity
-            android:name=".CardChangeActivity"
+            android:name=".activity.lobby.CardChangeActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         </activity>
         <activity
-            android:name=".EndGameActivity"
+            android:name=".activity.game.EndGameActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         </activity>
         <service
-            android:name=".GameLogic"
+            android:name=".services.GameServer"
             android:enabled="true"
             android:exported="false">
         </service>

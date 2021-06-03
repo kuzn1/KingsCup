@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:ignore="ContentDescription"
         android:layout_width="match_parent"
-        tools:context=".LobbyActivity"
+        tools:context=".activity.lobby.LobbyActivity"
         android:layout_height="match_parent"
         android:background="@drawable/gradient_background">
 

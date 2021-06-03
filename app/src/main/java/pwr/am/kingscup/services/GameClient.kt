@@ -1,15 +1,14 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.services
 
-import android.content.Intent
 import android.util.Log
 import android.util.Pair
-import androidx.core.content.ContextCompat.startActivity
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.activity.game.GameBoardActivity
 import pwr.am.kingscup.event.*
 import pwr.am.kingscup.render.Drawable
 import java.util.*
@@ -17,7 +16,7 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 import kotlin.random.Random
 
-class PlayerLogic(
+class GameClient(
     var gameKey: String,
     val playerKey: String,
     val context: GameBoardActivity,
@@ -46,7 +45,7 @@ class PlayerLogic(
     ) {
         referenceGames.child(gameKey).child("responses").push()
             .setValue(
-                GameLogic.Response(
+                GameServer.Response(
                     playerKey,
                     gameTick,
                     data,

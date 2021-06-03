@@ -1,9 +1,9 @@
 package pwr.am.kingscup.event
 
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.render.Animation
 
-class DrawEvent(game: PlayerLogic) : Event(game) {
+class DrawEvent(game: GameClient) : Event(game) {
     private var index = 0
 
     fun setIndex(i : Int){

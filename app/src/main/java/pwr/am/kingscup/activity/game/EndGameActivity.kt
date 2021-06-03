@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.game
 
 import android.app.Activity
 import android.content.Intent
@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
+import pwr.am.kingscup.activity.lobby.LobbyActivity
+import pwr.am.kingscup.activity.menu.MainActivity
 import pwr.am.kingscup.databinding.ActivityEndGameBinding
 
 class EndGameActivity : Activity() {

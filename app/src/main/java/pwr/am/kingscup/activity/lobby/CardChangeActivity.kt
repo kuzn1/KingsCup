@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.lobby
 
 import android.app.Activity
 import android.graphics.Color
@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
 
 import pwr.am.kingscup.databinding.ActivityCardChangeBinding
 import pwr.am.kingscup.databinding.CardChangeRowBinding

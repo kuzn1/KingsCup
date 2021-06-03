@@ -1,11 +1,10 @@
 package pwr.am.kingscup.event
 
-import pwr.am.kingscup.Game
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Card
 
-class DeckSetupEvent(game : PlayerLogic) : Event(game) {
+class DeckSetupEvent(game : GameClient) : Event(game) {
     private lateinit var deck : ArrayList<Int>
     private var fastEnd = false
 

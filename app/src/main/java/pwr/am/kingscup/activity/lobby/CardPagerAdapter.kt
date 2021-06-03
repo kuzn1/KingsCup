@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.lobby
 
 import android.app.Activity
 import android.content.Context
@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
+import pwr.am.kingscup.R
 import pwr.am.kingscup.databinding.CardViewPageBinding
 
 

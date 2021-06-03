@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.services
 
 import android.app.Service
 import android.content.Intent
@@ -12,7 +12,7 @@ import com.google.firebase.ktx.Firebase
 import kotlin.random.Random.Default.nextInt
 
 
-class GameLogic() : Service() {
+class GameServer() : Service() {
     private val database = Firebase.database
 
     private var referenceGames = database.getReference("games")

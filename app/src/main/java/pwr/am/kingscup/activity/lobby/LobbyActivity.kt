@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.lobby
 
 import android.app.Activity
 import android.content.Intent
@@ -6,14 +6,19 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import pwr.am.kingscup.services.LobbyClient
+import pwr.am.kingscup.R
+import pwr.am.kingscup.services.LobbyServer
+import pwr.am.kingscup.activity.game.GameBoardActivity
+import pwr.am.kingscup.activity.menu.MainActivity
 import pwr.am.kingscup.databinding.ActivityLobbyBinding
 
 
 class LobbyActivity : Activity() {
     private lateinit var binding: ActivityLobbyBinding
     private var owner: Boolean = false
-    private lateinit var server: Server
-    private lateinit var lobby: Lobby
+    private lateinit var lobbyServer: LobbyServer
+    private lateinit var lobbyClient: LobbyClient
     private lateinit var config: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,27 +30,27 @@ class LobbyActivity : Activity() {
         //owner creates game = run server
         if (owner) {
             binding.startButton.visibility = View.VISIBLE
-            server = Server()
+            lobbyServer = LobbyServer()
             if(intent.getBooleanExtra("recreate", false)){
-                server.recreateGame(intent.getStringExtra("gameCode").toString(), intent.getStringExtra("gameKey").toString())
+                lobbyServer.recreateGame(intent.getStringExtra("gameCode").toString(), intent.getStringExtra("gameKey").toString())
             }else{
-                server.createGame()
+                lobbyServer.createGame()
             }
 
-            binding.idTextView.text = server.gameCode
-            lobby = Lobby(server.gameKey)
+            binding.idTextView.text = lobbyServer.gameCode
+            lobbyClient = LobbyClient(lobbyServer.gameKey)
         } else {
             binding.idTextView.text = intent.getStringExtra("gameCode").toString()
-            lobby = Lobby(intent.getStringExtra("gameKey").toString())
-            lobby.addServerTickListener(this)
+            lobbyClient = LobbyClient(intent.getStringExtra("gameKey").toString())
+            lobbyClient.addServerTickListener(this)
         }
-        lobby.addServerPlayerCountListener(this)
-        lobby.addPlayerToServer(
+        lobbyClient.addServerPlayerCountListener(this)
+        lobbyClient.addPlayerToServer(
             //TODO defValue for nick should be random, or required on First login
             config.getString("nick", "Player"),
             config.getString("gender", "female")
         )
-        lobby.addListenerToPlayer(this)
+        lobbyClient.addListenerToPlayer(this)
 
 
         if (config.getString("gender", "female") == "female")
@@ -62,9 +67,9 @@ class LobbyActivity : Activity() {
 
     fun start() {
         if (owner) {
-            if (server.getPlayerCount() > 1) {
-                server.makeGamePrivate()
-                server.removeListenerToPlayers()
+            if (lobbyServer.getPlayerCount() > 1) {
+                lobbyServer.makeGamePrivate()
+                lobbyServer.removeListenerToPlayers()
             } else {
                 Toast.makeText(applicationContext, "NOT ENOUGH PLAYERS", Toast.LENGTH_SHORT).show()
                 return
@@ -72,12 +77,12 @@ class LobbyActivity : Activity() {
         }
 
         Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
-        lobby.removeListeners()
+        lobbyClient.removeListeners()
 
         val intent = Intent(this, GameBoardActivity::class.java)
-        intent.putExtra("gameKey", lobby.gameKey)
+        intent.putExtra("gameKey", lobbyClient.gameKey)
         intent.putExtra("OWNER", owner)
-        intent.putExtra("playerKey", lobby.playerKey)
+        intent.putExtra("playerKey", lobbyClient.playerKey)
         intent.putExtra("gameCode", binding.idTextView.text)
         startActivityForResult(intent, 1)
     }
@@ -86,27 +91,27 @@ class LobbyActivity : Activity() {
         when (view) {
             binding.startButton -> start()
             binding.playersButton -> {
-                lobby.removeListeners()
+                lobbyClient.removeListeners()
 
                 val intent = Intent(this, PlayerViewActivity::class.java)
-                intent.putExtra("gameKey", lobby.gameKey)
+                intent.putExtra("gameKey", lobbyClient.gameKey)
                 intent.putExtra("OWNER", owner)
-                intent.putExtra("playerKey", lobby.playerKey)
+                intent.putExtra("playerKey", lobbyClient.playerKey)
                 startActivityForResult(intent, 1)
             }
             binding.deckButton -> {
-                lobby.removeListeners()
+                lobbyClient.removeListeners()
                 val intent = Intent(this, CardViewActivity::class.java)
-                intent.putExtra("gameKey", lobby.gameKey)
+                intent.putExtra("gameKey", lobbyClient.gameKey)
                 intent.putExtra("OWNER", owner)
-                intent.putExtra("playerKey", lobby.playerKey)
+                intent.putExtra("playerKey", lobbyClient.playerKey)
                 startActivityForResult(intent, 1)
             }
             binding.leaveButton -> {
-                lobby.removeListeners()
-                lobby.removePlayer()
+                lobbyClient.removeListeners()
+                lobbyClient.removePlayer()
                 if (owner)
-                    server.removeGame()
+                    lobbyServer.removeGame()
 
 
                 startActivity(
@@ -135,10 +140,10 @@ class LobbyActivity : Activity() {
                     if (data.getStringExtra("result") == "kick")
                         finish()
                     if (data.getStringExtra("result") == "back") {
-                        lobby.addListenerToPlayer(this)
-                        lobby.addServerPlayerCountListener(this)
+                        lobbyClient.addListenerToPlayer(this)
+                        lobbyClient.addServerPlayerCountListener(this)
                         if (!owner)
-                            lobby.addServerTickListener(this)
+                            lobbyClient.addServerTickListener(this)
                     }
                     if (data.getStringExtra("result") == "start")
                         start()
@@ -152,12 +157,12 @@ class LobbyActivity : Activity() {
             binding.femaleCheckBox -> {
                 binding.femaleCheckBox.isChecked = true
                 binding.maleCheckBox.isChecked = false
-                lobby.updateGender("female")
+                lobbyClient.updateGender("female")
             }
             binding.maleCheckBox -> {
                 binding.maleCheckBox.isChecked = true
                 binding.femaleCheckBox.isChecked = false
-                lobby.updateGender("male")
+                lobbyClient.updateGender("male")
             }
         }
     }

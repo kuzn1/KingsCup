@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.lobby
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.services.LobbyClient
 import pwr.am.kingscup.databinding.ActivityCardViewBinding
 
 class CardViewActivity : Activity(){
@@ -17,7 +18,7 @@ class CardViewActivity : Activity(){
     private var gameKey = ""
 
     private lateinit var binding: ActivityCardViewBinding
-    private lateinit var lobby: Lobby
+    private lateinit var lobbyClient: LobbyClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +32,10 @@ class CardViewActivity : Activity(){
 
         gameKey = intent.getStringExtra("gameKey").toString()
 
-        lobby = Lobby(gameKey)
-        lobby.playerKey = intent.getStringExtra("playerKey").toString()
-        lobby.addServerTickListener(this)
-        lobby.addListenerToPlayer(this)
+        lobbyClient = LobbyClient(gameKey)
+        lobbyClient.playerKey = intent.getStringExtra("playerKey").toString()
+        lobbyClient.addServerTickListener(this)
+        lobbyClient.addListenerToPlayer(this)
 
         database = Firebase.database
         referenceCards =  database.getReference("games/$gameKey/card_set")
@@ -55,21 +56,21 @@ class CardViewActivity : Activity(){
                     cardIdList.add(i)
                 }
             }
-            runOnUiThread{binding.viewPager.adapter = CardPagerAdapter(this, cardIdList)}
+            runOnUiThread{binding.viewPager.adapter = CardPagerAdapter(this, cardIdList) }
         }
     }
 
     fun back(view: View) {
-        lobby.removeServerTickListener()
-        lobby.removeListenerToPlayer()
+        lobbyClient.removeServerTickListener()
+        lobbyClient.removeListenerToPlayer()
         val intent = Intent()
         intent.putExtra("result", "back")
         this.setResult(RESULT_OK, intent)
         finish()
     }
     override fun onBackPressed() {
-        lobby.removeServerTickListener()
-        lobby.removeListenerToPlayer()
+        lobbyClient.removeServerTickListener()
+        lobbyClient.removeListenerToPlayer()
         val intent = Intent()
         intent.putExtra("result", "back")
         this.setResult(RESULT_OK, intent)

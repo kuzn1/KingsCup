@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.menu
 
 import android.app.Activity
 import android.os.Bundle

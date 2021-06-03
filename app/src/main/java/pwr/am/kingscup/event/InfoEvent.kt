@@ -3,11 +3,10 @@ package pwr.am.kingscup.event
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import pwr.am.kingscup.Game
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.InfoViewBinding
 
-class InfoEvent(game: PlayerLogic): Event(game) {
+class InfoEvent(game: GameClient): Event(game) {
 
     private var binding: InfoViewBinding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
 

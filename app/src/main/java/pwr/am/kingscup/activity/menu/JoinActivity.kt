@@ -1,16 +1,14 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.menu
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.activity.lobby.LobbyActivity
 import pwr.am.kingscup.databinding.ActivityJoinBinding
-import kotlin.math.log
 
 class JoinActivity : Activity() {
     private lateinit var binding: ActivityJoinBinding

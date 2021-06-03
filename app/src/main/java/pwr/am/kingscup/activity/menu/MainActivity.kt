@@ -1,10 +1,10 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.menu
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Message
 import android.view.View
+import pwr.am.kingscup.activity.lobby.LobbyActivity
 import pwr.am.kingscup.databinding.ActivityMainBinding
 
 

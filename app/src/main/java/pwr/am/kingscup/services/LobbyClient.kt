@@ -1,4 +1,4 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.services
 
 import android.app.Activity
 import android.content.Intent
@@ -7,9 +7,9 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.options
+import pwr.am.kingscup.activity.lobby.LobbyActivity
 
-class Lobby(val gameKey : String) {
+class LobbyClient(val gameKey : String) {
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")

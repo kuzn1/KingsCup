@@ -4,15 +4,13 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import pwr.am.kingscup.Game
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.R
 import pwr.am.kingscup.databinding.PlayerViewRowBinding
 import pwr.am.kingscup.databinding.PlayetChooseViewBinding
-import java.util.*
 import kotlin.collections.ArrayList
 
-class PlayerChooseEvent(game: PlayerLogic): Event(game) {
+class PlayerChooseEvent(game: GameClient): Event(game) {
 
     private var binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
     private lateinit var players: ArrayList<Pair<String, String>>

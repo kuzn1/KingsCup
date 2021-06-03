@@ -1,28 +1,19 @@
-package pwr.am.kingscup
+package pwr.am.kingscup.activity.game
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Display
-import android.view.KeyEvent
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import pwr.am.kingscup.services.GameServer
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.ActivityGameBoardBinding
 import pwr.am.kingscup.render.*
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.concurrent.schedule
 
 class GameBoardActivity : Activity() {
     private lateinit var binding: ActivityGameBoardBinding
     private var owner: Boolean = false
     private lateinit var gameKey: String
     private lateinit var playerKey: String
-    private lateinit var playerLogic: PlayerLogic
+    private lateinit var gameClient: GameClient
     private lateinit var gameCode: String
 
     lateinit var glView: OpenGLView
@@ -37,7 +28,7 @@ class GameBoardActivity : Activity() {
         gameCode = intent.getStringExtra("gameCode").toString()
 
         if (owner) {
-            intent = Intent(this, GameLogic::class.java)
+            intent = Intent(this, GameServer::class.java)
             intent.putExtra("gameKey", gameKey)
             startService(intent)
         }
@@ -46,11 +37,11 @@ class GameBoardActivity : Activity() {
         setContentView(glView)
         glView.drawables.add(Background())
 
-        playerLogic = PlayerLogic(gameKey, playerKey, this, glView.drawables)
-        playerLogic.addListenerToPlayers()
-        playerLogic.getPlayerGender()
-        playerLogic.addListenerToGameData()
-        playerLogic.setupDeck()
+        gameClient = GameClient(gameKey, playerKey, this, glView.drawables)
+        gameClient.addListenerToPlayers()
+        gameClient.getPlayerGender()
+        gameClient.addListenerToGameData()
+        gameClient.setupDeck()
 
     }
 
@@ -74,7 +65,7 @@ class GameBoardActivity : Activity() {
     }
 
     override fun onDestroy() {
-        stopService(Intent(this, GameLogic::class.java))
+        stopService(Intent(this, GameServer::class.java))
         super.onDestroy()
     }
 }

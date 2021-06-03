@@ -2,11 +2,10 @@ package pwr.am.kingscup.event
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import pwr.am.kingscup.Game
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.InfoViewBinding
 
-class InfoAcceptEvent(game: PlayerLogic): Event(game) {
+class InfoAcceptEvent(game: GameClient): Event(game) {
 
     private lateinit var binding: InfoViewBinding
 

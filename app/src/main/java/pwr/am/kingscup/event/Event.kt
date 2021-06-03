@@ -1,9 +1,8 @@
 package pwr.am.kingscup.event
 
-import pwr.am.kingscup.Game
-import pwr.am.kingscup.PlayerLogic
+import pwr.am.kingscup.services.GameClient
 
-abstract class Event (val game : PlayerLogic){
+abstract class Event (val game : GameClient){
 
     abstract fun start()
 
