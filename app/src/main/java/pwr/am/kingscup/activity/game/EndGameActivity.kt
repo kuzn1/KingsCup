@@ -40,6 +40,7 @@ class EndGameActivity : Activity() {
             intent.putExtra("playerKey", playerKey)
             intent.putExtra("recreate", true)
             startActivity(intent)
+            finish()
         }else{
             Firebase.database.getReference("openGames").child(gameCode).get().addOnSuccessListener {
                 if (it.child("gameCode").value == null) {
@@ -53,6 +54,7 @@ class EndGameActivity : Activity() {
                     intent.putExtra("recreate", true)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(intent)
+                    finish()
                 }
             }
         }
@@ -65,5 +67,6 @@ class EndGameActivity : Activity() {
                 MainActivity::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         )
+        finish()
     }
 }

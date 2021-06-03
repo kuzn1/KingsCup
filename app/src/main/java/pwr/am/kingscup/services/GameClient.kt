@@ -1,14 +1,17 @@
 package pwr.am.kingscup.services
 
+import android.content.Intent
 import android.util.Log
-import android.util.Pair
+import android.widget.Toast
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
 import pwr.am.kingscup.activity.game.GameBoardActivity
+import pwr.am.kingscup.activity.menu.MainActivity
 import pwr.am.kingscup.event.*
 import pwr.am.kingscup.render.Drawable
 import java.util.*
@@ -33,7 +36,7 @@ class GameClient(
     private lateinit var listenerToActivityTick: ValueEventListener
     private var currentEvent: Event = DeckSetupEvent(this)
     private var cardEvent: Event = DeckSetupEvent(this)
-    private var playerArray = ArrayList<Pair<String, String>>()
+    private var playerArray = ArrayList<Player>()
     private var pickedPlayer = ""
 
     //todo player Listener
@@ -64,20 +67,24 @@ class GameClient(
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     playerArray.add(
-                        Pair(
-                            snapshot.key.toString(),
-                            snapshot.child("name").value.toString()
-                        )
+                        Player(snapshot.key.toString(),true, snapshot.child("name").value.toString())
                     )
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
                     if (snapshot.key.toString() == playerKey) {
-                        //TODO END CLIENT
+                        Toast.makeText(context, context.getString(R.string.server_down), Toast.LENGTH_LONG).show()
+                        context.runOnUiThread{
+                            val intent = Intent(
+                                context,
+                                MainActivity::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            context.startActivity(intent)
+                        }
                     }
-                    for (player in playerArray) {
-                        if (player.first == snapshot.key.toString())
-                            playerArray.remove(player)
+                    else {
+                        playerArray.find { it.playerKey == snapshot.key.toString() }?.isOnline = false
+                        Toast.makeText(context, "player ${snapshot.child("name").value.toString()} disconnected", Toast.LENGTH_LONG).show()
                     }
                 }
             })
@@ -87,6 +94,7 @@ class GameClient(
         listenerToGameData = referenceGames.child(gameKey).child("gamedata")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.e("GameClient","snapshot received: $snapshot")
                     if(snapshot.child("server_tick").value != null) {
                         if (gameTick < (snapshot.child("server_tick").value as Long).toInt()) {
                             Log.e("GameClient", snapshot.toString())
@@ -108,7 +116,6 @@ class GameClient(
                     if(snapshot.value != null)
                         playerReference.setValue(snapshot.value as Long)
                 }
-
                 override fun onCancelled(error: DatabaseError) {}
             })
     }
@@ -140,16 +147,17 @@ class GameClient(
         val current_player_id = snapshot.child("current_player_id").value.toString()
         current_card_id = (snapshot.child("current_card_id").value as Long).toInt()
         val game_status = snapshot.child("game_status").value.toString()
-        Log.e("OBECNA KARTA ", current_card_id.toString())
         currentEvent.end()
         when (game_status) {
             "DrawCard" -> {
+                Log.e("Client ", "DrawCard")
                 currentEvent = ShuffleEvent(this)
                 if (current_player_id == playerKey)
                         (currentEvent as ShuffleEvent).enableDraw()
                 currentEvent.start()
             }
             "CardAction" -> {
+                Log.e("Client ", "CardAction")
                 currentEvent = DrawEvent(this)
                 (currentEvent as DrawEvent).setCard(current_card_id)
                 when (current_card_id) {
@@ -158,7 +166,7 @@ class GameClient(
                         if (current_player_id == playerKey) {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Other players drink")
-                            sendResponse("CardActionDone", "")
+                            (cardEvent as InfoEvent).sendCardActionDone()
                         } else {
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
@@ -174,7 +182,7 @@ class GameClient(
                             (cardEvent as PlayerChooseEvent).setKey("player_choose_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player")
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} chooses another player")
                         }
                     }
                     //Three - only current player drinks
@@ -186,8 +194,8 @@ class GameClient(
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
-                            sendResponse("CardActionDone", "")
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} have to take a drink")
+                            (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
                     //Four - last player to touch the floor has to drink
@@ -205,7 +213,7 @@ class GameClient(
                         } else {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Every male have to take a drink")
-                            sendResponse("CardActionDone", "")
+                            (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
                     //Six - all females drinks
@@ -216,10 +224,9 @@ class GameClient(
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
-                            sendResponse("CardActionDone", "")
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Every female have to take a drink")
-                            sendResponse("CardActionDone", "")
+                            (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
                     //Seven - last person to raise their hand has to drink
@@ -235,10 +242,9 @@ class GameClient(
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
-                            sendResponse("CardActionDone", "")
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("You where lucky :)")
-                            sendResponse("CardActionDone", "")
+                            (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
                     //Queen - pick player and ask him question
@@ -249,7 +255,7 @@ class GameClient(
                             (cardEvent as PlayerChooseEvent).setKey("player_choose_event_queen")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player to answer question")
+                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} chooses another player to answer question")
                         }
                     }
                     //King - all players finish drinks
@@ -263,6 +269,7 @@ class GameClient(
                 currentEvent.start()
             }
             "Drinks" -> {
+                Log.e("Client ", "Drinks")
                 if (playerKey == snapshot.child("players_to_drink").value.toString()) {
                     currentEvent = InfoAcceptEvent(this)
                     (currentEvent as InfoAcceptEvent).setText("You have to take a drink")
@@ -270,12 +277,13 @@ class GameClient(
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
-                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
+                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.playerKey == current_player_id }?.name} have to take a drink")
 
                 }
                 currentEvent.start()
             }
             "Question" -> {
+                Log.e("Client ", "Question")
                 if (playerKey == snapshot.child("selected_player_for_question").value.toString()) {
                     currentEvent.end()
                     currentEvent = TextInputEvent(this)
@@ -290,16 +298,17 @@ class GameClient(
                     (currentEvent as InfoEvent).setText(
                         "Player ${
                             playerArray.find {
-                                it.first == snapshot.child(
+                                it.playerKey == snapshot.child(
                                     "selected_player_for_question"
                                 ).value.toString()
-                            }?.second
+                            }?.name
                         } answers question"
                     )
                     currentEvent.start()
                 }
             }
             "Answer" -> {
+                Log.e("Client ", "Answer")
                 currentEvent = InfoEvent(this)
                 (currentEvent as InfoEvent).setText("Question: ${snapshot.child("question").value.toString()}\n Answer: ${snapshot.child("answer").value.toString()}")
                 currentEvent.start()
@@ -309,6 +318,7 @@ class GameClient(
             }
 
             "AcceptThisRound" -> {
+                Log.e("Client ", "AcceptThisRound")
                 currentEvent = InfoAcceptEvent(this)
                 (currentEvent as InfoAcceptEvent).setText("Ready for next?")
                 (currentEvent as InfoAcceptEvent).setButtonText("Yes")
@@ -316,9 +326,10 @@ class GameClient(
                 currentEvent.start()
             }
             "FinishGame" ->{
+                Log.e("Client ", "FinishGame")
                 referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
                 referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
-                referenceGames.child(gameKey).child("activity").removeEventListener(listenerToActivityTick)
+                referenceGames.child(gameKey).child("activity/tick").removeEventListener(listenerToActivityTick)
                 context.startEndGameActivity()
             }
         }
@@ -413,8 +424,18 @@ class GameClient(
                 }
                 currentEvent.start()
             }
+            "CardActionDone"->{
+                Timer("task", false).schedule(2000) {
+                    sendResponse("CardActionDone", "")
+                }
+            }
 
             else -> Log.e("GameClient", "Unhandled event response key! [$key]")
         }
     }
+    data class Player(
+        val playerKey: String,
+        var isOnline: Boolean = true,
+        var name: String,
+    )
 }

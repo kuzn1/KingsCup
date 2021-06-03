@@ -10,18 +10,18 @@ import pwr.am.kingscup.databinding.PlayerViewRowBinding
 import pwr.am.kingscup.databinding.PlayetChooseViewBinding
 import kotlin.collections.ArrayList
 
-class PlayerChooseEvent(game: GameClient): Event(game) {
+class PlayerChooseEvent(game: GameClient) : Event(game) {
 
     private var binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
-    private lateinit var players: ArrayList<Pair<String, String>>
+    private lateinit var players: ArrayList<GameClient.Player>
     private var key = "player_choose_event"
     private var chosen = false
 
-    fun setPlayers(playerList: ArrayList<Pair<String, String>>) {
+    fun setPlayers(playerList: ArrayList<GameClient.Player>) {
         players = playerList
     }
 
-    fun setKey(key :String){
+    fun setKey(key: String) {
         this.key = key
     }
 
@@ -29,24 +29,29 @@ class PlayerChooseEvent(game: GameClient): Event(game) {
         game.context.runOnUiThread {
 
             binding.playerList.removeAllViews()
-            for (player: Pair<String, String> in players) {
-                val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
-                row.nickName.text = player.second
-                row.nickName.textSize = 18f
-                row.kickButton.visibility = View.VISIBLE
-                row.kickButton.text = game.context.getString(R.string.choose)
-                row.kickButton.setOnClickListener{
-                    if(!chosen) {
-                        chosen = true
-                        game.respond(key, player.first)
+            for (player in players) {
+                if (player.isOnline) {
+                    val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
+                    row.nickName.text = player.name
+                    row.nickName.textSize = 18f
+                    row.kickButton.visibility = View.VISIBLE
+                    row.kickButton.text = game.context.getString(R.string.choose)
+                    row.kickButton.setOnClickListener {
+                        if (!chosen) {
+                            chosen = true
+                            game.respond(key, player.playerKey)
+                        }
                     }
+                    binding.playerList.addView(row.root)
                 }
-                binding.playerList.addView(row.root)
             }
 
             game.context.addContentView(
                 binding.root,
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
             )
         }
     }

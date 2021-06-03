@@ -41,12 +41,12 @@ class GameServer() : Service() {
     }
 
     override fun stopService(name: Intent?): Boolean {
-        Log.e("Server", "stopclose")
+        Log.e("Server", "stopService")
         return super.stopService(name)
     }
 
     override fun onDestroy() {
-        Log.e("Server", "Destroyclose")
+        Log.e("Server", "onDestroy")
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("responses").removeEventListener(listenerToResponses)
         referenceGames.child(gameKey).removeValue()
@@ -108,7 +108,9 @@ class GameServer() : Service() {
 
                     //if currentState = WAITING_FOR_PLAYERS_TO_CONNECT
                     if (currentState == State.WAITING_FOR_PLAYERS_TO_CONNECT) {
+                        Log.e("Server", "disconnect on WAITING_FOR_PLAYERS_TO_CONNECT")
                         if (responseArray.find { it.playerKey == snapshot.key } == null) {
+                            Log.e("Server", "Simulating disconnect")
                             responseToAction(Response(snapshot.key, gameTick, "Join", ""))
                         }
                         return
@@ -167,6 +169,14 @@ class GameServer() : Service() {
                                     selectedPlayer = ""
                                     cardState = 0
                                     pickNextPlayerAndSendNewCard()
+                                } else if(cardState == 2){
+                                    if (responseArray.find { it.playerKey == snapshot.key } == null) {
+                                        responseToAction(
+                                            Response(
+                                                snapshot.key, gameTick, "CardActionDone", ""
+                                            )
+                                        )
+                                    }
                                 }
                             }
 
@@ -216,13 +226,19 @@ class GameServer() : Service() {
         if (currentState == State.WAITING_FOR_PLAYERS_TO_CONNECT) {
             Log.e("Server", "WAITING_FOR_PLAYERS_TO_CONNECT")
             if (response.data == "Join") {
-                responseArray.add(response)
-                if (playerCount == responseArray.size) {
-                    responseArray.clear()
+                playerArray.find { response.playerKey == it.playerKey }?.responded = true
+                var temp = true
+                for (player in playerArray) {
+                    if (player.responded == false && player.isOnline == true) {
+                        temp = false
+                    }
+                }
+                if (temp) {
+                    playerArray.forEach { it.responded = false }
                     pickNextPlayerAndSendNewCard()
-                    return
                 }
             }
+            return
         }
 
         //wait until player picks card
@@ -272,7 +288,7 @@ class GameServer() : Service() {
 
         //0 cards FinishGame
         if(cardArray.size == 0){
-            Log.e("SERVER"," 0 cards left")
+            Log.e("Server"," 0 cards left")
             setNewGameStatus("FinishGame")
             updateGameTick()
             stopSelf()
@@ -294,7 +310,7 @@ class GameServer() : Service() {
         updateGameTick()
         Log.e(
             "Server",
-            "pickced new player $currentPlayer  ${playerArray[currentPlayer]} and card $currentCard"
+            "picked new player $currentPlayer  ${playerArray[currentPlayer]} and card $currentCard"
         )
     }
 
@@ -413,7 +429,6 @@ class GameServer() : Service() {
                 }
             }
 
-            //todo question
             11, 24, 37, 50 //Queen - pick player and ask him question
             -> {
                 Log.e("Server", "Queen")
@@ -441,7 +456,7 @@ class GameServer() : Service() {
                         return
                     }
                 }
-                if (cardState == 2 ){
+                if (cardState == 2 && response.data == "CardActionDone"){
                     responseArray.add(response)
                     playerArray.find { response.playerKey == it.playerKey }?.responded = true
                     var temp = true

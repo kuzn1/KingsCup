@@ -3,6 +3,7 @@ package pwr.am.kingscup.activity.game
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import pwr.am.kingscup.activity.menu.MainActivity
 import pwr.am.kingscup.services.GameServer
 import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.ActivityGameBoardBinding
@@ -66,7 +67,18 @@ class GameBoardActivity : Activity() {
     }
 
     override fun onDestroy() {
-        stopService(Intent(this, GameServer::class.java))
+        if(owner)
+            stopService(Intent(this, GameServer::class.java))
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        startActivity(
+            Intent(
+                this,
+                MainActivity::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        )
+        finish()
     }
 }

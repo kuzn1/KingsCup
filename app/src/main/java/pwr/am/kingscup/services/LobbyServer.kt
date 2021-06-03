@@ -10,7 +10,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
-class LobbyServer()  {
+class   LobbyServer()  {
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")

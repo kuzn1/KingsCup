@@ -11,9 +11,13 @@ class InfoEvent(game: GameClient): Event(game) {
     private var binding: InfoViewBinding = InfoViewBinding.inflate(LayoutInflater.from(game.context))
 
     private var text = ""
+    private var send = false
 
     fun setText(t : String){
         text = t
+    }
+    fun sendCardActionDone(){
+        send = true
     }
 
     override fun start() {
@@ -26,9 +30,13 @@ class InfoEvent(game: GameClient): Event(game) {
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
         }
+        if(send){
+            game.respond("CardActionDone", "")
+        }
     }
 
     override fun end() {
+        send = false
         game.context.runOnUiThread {
             if (binding.root.parent != null)
                 (binding.root.parent as ViewGroup).removeView(binding.root)
