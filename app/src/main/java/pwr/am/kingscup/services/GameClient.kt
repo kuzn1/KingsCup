@@ -157,6 +157,7 @@ class GameClient(
                         if (current_player_id == playerKey) {
                             cardEvent = PlayerChooseEvent(this)
                             (cardEvent as PlayerChooseEvent).setPlayers(playerArray)
+                            (cardEvent as PlayerChooseEvent).setKey("player_choose_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player")
@@ -311,15 +312,17 @@ class GameClient(
 
     //function called by events
     fun respond(key: String, value: Any) {
-        when (currentEvent) {
-            is DeckSetupEvent -> {
+        when (key) {
+            "deck_setup_event_done" -> {
                 sendResponse("Join", "")
             }
-            is ShuffleEvent -> {
+
+            "shuffle_event_drawn" -> {
                 currentEvent.end()
                 sendResponse("Drawn", "")
             }
-            is DrawEvent -> {
+
+            "draw_event_done" -> {
                 currentEvent.end()
                 currentEvent = cardEvent
                 if (currentEvent is AccelerationEvent) {
@@ -330,44 +333,48 @@ class GameClient(
                     }
                 }
             }
-            is InfoAcceptEvent -> {
-                if (key == "info_accept_event_drink") {
-                    sendResponse("CardActionDone", "")
-                    currentEvent.end()
-                }
-                if (key == "info_accept_event_accept") {
-                    currentEvent.end()
-                    currentEvent = RemoveCardEvent(this)
-                    (currentEvent as RemoveCardEvent).setCard(current_card_id)
-                    currentEvent.start()
-                    sendResponse("Accepted", "")
-                }
-            }
-            is PlayerChooseEvent -> {
-                if (key == "player_choose_event_player") {
-                    currentEvent.end()
-                    sendResponse("PickedPlayer", value.toString())
-                } else if (key == "player_choose_event_queen") {
-                    pickedPlayer = value.toString()
-                    currentEvent.end()
-                    currentEvent = TextInputEvent(this)
-                    (currentEvent as TextInputEvent).setButtonText("Ask")
-                    (currentEvent as TextInputEvent).setText("Enter question")
-                    (currentEvent as TextInputEvent).setHint("question")
-                    (currentEvent as TextInputEvent).start()
-                }
-            }
-            is TextInputEvent -> {
-                if (key == "text_input_event_question") {
-                    currentEvent.end()
-                    sendResponse("PickedPlayer", pickedPlayer, value.toString())
-                } else if (key == "text_input_event_answer") {
-                    currentEvent.end()
-                    sendResponse("Answer", value.toString())
-                }
+
+            "info_accept_event_drink" -> {
+                sendResponse("CardActionDone", "")
+                currentEvent.end()
             }
 
-            is AccelerationEvent -> {
+            "info_accept_event_accept" -> {
+                currentEvent.end()
+                currentEvent = RemoveCardEvent(this)
+                (currentEvent as RemoveCardEvent).setCard(current_card_id)
+                currentEvent.start()
+                sendResponse("Accepted", "")
+            }
+
+
+            "player_choose_event_drink" -> {
+                currentEvent.end()
+                sendResponse("PickedPlayer", value.toString())
+            }
+
+            "player_choose_event_queen" -> {
+                pickedPlayer = value.toString()
+                currentEvent.end()
+                currentEvent = TextInputEvent(this)
+                (currentEvent as TextInputEvent).setButtonText("Ask")
+                (currentEvent as TextInputEvent).setText("Enter question")
+                (currentEvent as TextInputEvent).setKey("text_input_event_question")
+                (currentEvent as TextInputEvent).setHint("question")
+                (currentEvent as TextInputEvent).start()
+            }
+
+            "text_input_event_question"-> {
+                currentEvent.end()
+                sendResponse("PickedPlayer", pickedPlayer, value.toString())
+            }
+
+            "text_input_event_answer"-> {
+                currentEvent.end()
+                sendResponse("Answer", value.toString())
+            }
+
+            "acceleration_event_time" -> {
                 Log.e("AccelerationEvent", value.toString())
                 currentEvent.end()
                 currentEvent = InfoEvent(this)
@@ -378,13 +385,15 @@ class GameClient(
                     } else if(this == 5000L){
                         (currentEvent as InfoEvent).setText("Timeout :(")
                         sendResponse("Time", "5000")
-                    }else {
+                    } else {
                         sendResponse("Time", value.toString())
                         (currentEvent as InfoEvent).setText("Your time: " + this.toString() + "ms")
                     }
                 }
                 currentEvent.start()
             }
+
+            else -> Log.e("GameClient", "Unrecognized event response key!")
         }
     }
 }
