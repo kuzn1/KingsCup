@@ -30,6 +30,7 @@ class GameClient(
     private var current_card_id = 0
     private lateinit var listenerToGameData: ValueEventListener
     private lateinit var listenerToPlayers: ChildEventListener
+    private lateinit var listenerToActivityTick: ValueEventListener
     private var currentEvent: Event = DeckSetupEvent(this)
     private var cardEvent: Event = DeckSetupEvent(this)
     private var playerArray = ArrayList<Pair<String, String>>()
@@ -93,6 +94,19 @@ class GameClient(
                             handleServerUpdate(snapshot)
                         }
                     }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    fun addListenerToActivity() {
+        listenerToActivityTick = referenceGames.child("$gameKey/activity/tick")
+            .addValueEventListener(object : ValueEventListener {
+                val playerReference = referenceGames.child("$gameKey/activity/$playerKey")
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.value != null)
+                        playerReference.setValue(snapshot.value as Long)
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -304,6 +318,7 @@ class GameClient(
             "FinishGame" ->{
                 referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
                 referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
+                referenceGames.child(gameKey).child("activity").removeEventListener(listenerToActivityTick)
                 context.startEndGameActivity()
             }
         }

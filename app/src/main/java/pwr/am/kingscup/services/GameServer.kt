@@ -7,8 +7,13 @@ import android.util.Log
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.concurrent.schedule
 import kotlin.random.Random.Default.nextInt
 
 
@@ -16,6 +21,8 @@ class GameServer() : Service() {
     private val database = Firebase.database
 
     private var referenceGames = database.getReference("games")
+    private lateinit var referenceActivity : DatabaseReference
+    private lateinit var referencePlayers : DatabaseReference
     private var gameTick = 0
     private var playerCount = 0
     private lateinit var listenerToPlayers: ChildEventListener
@@ -458,6 +465,7 @@ class GameServer() : Service() {
     }
 
     private fun start() {
+        referencePlayers = database.getReference("games/$gameKey/players")
 
         currentPlayer = -1
         addListenerToPlayers()
@@ -470,6 +478,39 @@ class GameServer() : Service() {
                     cardArray.add(Card(i, (it.child(i.toString()).value as Long).toInt()))
             }
             addListenerToResponses()
+        }
+
+        startActivityCheck()
+    }
+
+    private fun startActivityCheck() {
+        referenceActivity = referenceGames.child("$gameKey/activity")
+
+        val playerMap = HashMap<String, Long>()
+        referencePlayers.get().addOnSuccessListener {
+            for(player in it.children)
+                playerMap.put(player.key as String, 0L)
+
+            referenceActivity.setValue(playerMap)
+            referenceActivity.child("tick").setValue(0L)
+
+            Timer("activity_check", false).schedule(5000){
+                activityCheck(0L)
+            }
+        }
+    }
+
+    private fun activityCheck(i: Long) {
+        referenceActivity.get().addOnSuccessListener{
+            for(player in it.children){
+                if((player.value as Long) < i){
+                    referencePlayers.child(player.key!!).removeValue()
+                }
+            }
+            referenceActivity.child("tick").setValue(i+1)
+            Timer("activity_check", false).schedule(10000){
+                activityCheck(i+1)
+            }
         }
     }
 

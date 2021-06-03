@@ -42,6 +42,7 @@ class GameBoardActivity : Activity() {
         gameClient.getPlayerGender()
         gameClient.addListenerToGameData()
         gameClient.setupDeck()
+        gameClient.addListenerToActivity()
 
     }
 
