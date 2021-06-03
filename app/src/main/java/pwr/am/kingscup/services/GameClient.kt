@@ -86,9 +86,9 @@ class GameClient(
         listenerToGameData = referenceGames.child(gameKey).child("gamedata")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.e("POGO", snapshot.toString())
                     if(snapshot.child("server_tick").value != null) {
                         if (gameTick < (snapshot.child("server_tick").value as Long).toInt()) {
+                            Log.e("GameClient", snapshot.toString())
                             gameTick = (snapshot.child("server_tick").value as Long).toInt()
                             handleServerUpdate(snapshot)
                         }
@@ -381,19 +381,25 @@ class GameClient(
                 with(value as Long) {
                     if (this == 0L) {
                         (currentEvent as InfoEvent).setText("Wrong Move :(")
-                        sendResponse("Time", "5000")
+                        Timer("task", false).schedule(2000) {
+                            sendResponse("Time", "5000")
+                        }
                     } else if(this == 5000L){
                         (currentEvent as InfoEvent).setText("Timeout :(")
-                        sendResponse("Time", "5000")
+                        Timer("task", false).schedule(2000) {
+                            sendResponse("Time", "5000")
+                        }
                     } else {
-                        sendResponse("Time", value.toString())
                         (currentEvent as InfoEvent).setText("Your time: " + this.toString() + "ms")
+                        Timer("task", false).schedule(2000) {
+                            sendResponse("Time", value.toString())
+                        }
                     }
                 }
                 currentEvent.start()
             }
 
-            else -> Log.e("GameClient", "Unrecognized event response key!")
+            else -> Log.e("GameClient", "Unhandled event response key! [$key]")
         }
     }
 }

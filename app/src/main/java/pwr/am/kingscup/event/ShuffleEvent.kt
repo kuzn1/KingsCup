@@ -4,6 +4,8 @@ import android.os.SystemClock
 import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Drawable
+import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.random.Random
 
 class ShuffleEvent(game : GameClient) : Event(game) {
@@ -48,13 +50,17 @@ class ShuffleEvent(game : GameClient) : Event(game) {
     }
 
     fun reminderAnimation(card : Drawable){
-        SystemClock.sleep(2000)
         if(animate){
             card.animate(Animation(0.0f,0.0f,0.5f,0.0f,0.0f,0.0f,100, false))
             card.animate(Animation(0.0f,0.0f,-0.5f,0.0f,0.0f,0.0f,100, false))
             card.animate(Animation(0.0f,0.0f,0.5f,0.0f,0.0f,0.0f,100, false))
             card.animate(Animation(0.0f,0.0f,-0.5f,0.0f,0.0f,0.0f,100, false).also {
-                it.after { reminderAnimation(card) }
+                it.after {
+                    Timer("draw_reminder", false).schedule(2000) {
+                        reminderAnimation(card)
+                    }
+                    Unit
+                }
             })
         }
     }

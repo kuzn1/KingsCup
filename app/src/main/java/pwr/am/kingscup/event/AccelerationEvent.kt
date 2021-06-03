@@ -9,6 +9,8 @@ import android.os.SystemClock
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import pwr.am.kingscup.services.GameClient
+import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.math.absoluteValue
 
 class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
@@ -17,6 +19,7 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
     private var time = 0L
     private var count = 0
     private lateinit var progressBar : ProgressBar
+    private var progress = 0
 
     fun setUp(){
         state = 1
@@ -37,11 +40,28 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
             SensorManager.SENSOR_DELAY_GAME
         )
         game.context.runOnUiThread{
-            progressBar = ProgressBar(game.context)
+            progressBar = ProgressBar(game.context,null,android.R.attr.progressBarStyleHorizontal)
+            progressBar.scaleY = 2f
             game.context.addContentView(
                 progressBar,
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             )
+            startProgressTimer()
+        }
+    }
+
+    private fun startProgressTimer() {
+        if(state != 0) {
+            Timer("progress", false).schedule(50) {
+                progress++
+                progressBar.progress = progress
+                if (progress == 100) {
+                    state = 0
+                    game.respond("acceleration_event_time", 5000L)
+                } else {
+                    startProgressTimer()
+                }
+            }
         }
     }
 
