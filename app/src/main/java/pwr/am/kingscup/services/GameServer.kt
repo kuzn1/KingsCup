@@ -31,6 +31,8 @@ class GameServer() : Service() {
     private var responseArray = ArrayList<Response>()
     private var playerArray = ArrayList<Player>()
     private var cardArray = ArrayList<Card>()
+    private var ActivityCheck = true
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         gameKey = intent?.getStringExtra("gameKey").toString()
@@ -47,6 +49,7 @@ class GameServer() : Service() {
 
     override fun onDestroy() {
         Log.e("Server", "onDestroy")
+        ActivityCheck = false
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("responses").removeEventListener(listenerToResponses)
         referenceGames.child(gameKey).removeValue()
@@ -116,9 +119,13 @@ class GameServer() : Service() {
                         return
                     }
                     //current player
-                    if (playerArray[currentPlayer].playerKey == snapshot.key) {
-                        cardState = 0
-                        pickNextPlayerAndSendNewCard()
+
+                    //if (playerArray[currentPlayer].playerKey == snapshot.key) {
+                    cardState = 0
+                    responseArray.clear()
+
+                    pickNextPlayerAndSendNewCard()
+                    /*
                     } else {
                         //card handling
                         when (currentCard) {
@@ -179,9 +186,8 @@ class GameServer() : Service() {
                                     }
                                 }
                             }
-
                         }
-                    }
+                    }*/
                 }
             })
     }
@@ -516,17 +522,20 @@ class GameServer() : Service() {
     }
 
     private fun activityCheck(i: Long) {
-        referenceActivity.get().addOnSuccessListener{
-            for(player in it.children){
-                if((player.value as Long) < i){
-                    referencePlayers.child(player.key!!).removeValue()
+        if(ActivityCheck) {
+            referenceActivity.get().addOnSuccessListener {
+                for (player in it.children) {
+                    if ((player.value as Long) < i) {
+                        referencePlayers.child(player.key!!).removeValue()
+                    }
+                }
+                referenceActivity.child("tick").setValue(i + 1)
+                Timer("activity_check", true).schedule(10000) {
+                    activityCheck(i + 1)
                 }
             }
-            referenceActivity.child("tick").setValue(i+1)
-            Timer("activity_check", true).schedule(10000){
-                activityCheck(i+1)
-            }
         }
+
     }
 
     class Response(
