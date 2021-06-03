@@ -1,5 +1,6 @@
 package pwr.am.kingscup.event
 
+import android.media.MediaPlayer
 import android.speech.tts.TextToSpeech
 import pwr.am.kingscup.R
 import pwr.am.kingscup.services.GameClient
@@ -24,19 +25,23 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
     }
 
     override fun start() {
-        if(index == 0) index = game.drawables.lastIndex
-        game.drawables[index].animate(
-            Animation(0.0f,0.0f,-2.0f, 0.0f,180.0f,0.0f,1000).also {
-                it.after {
-                    game.respond("draw_event_done", true)
-                    if(tts){
-                        val cardNames = game.context.resources.getStringArray(R.array.card_name)
-                        val text = cardNames[game.drawables[index].id%13]
-                        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null,"")
+        if (index == 0) index = game.drawables.lastIndex
+
+        MediaPlayer.create(game.context, R.raw.draw).setOnPreparedListener {
+            it.start()
+            game.drawables[index].animate(
+                Animation(0.0f, 0.0f, -2.0f, 0.0f, 180.0f, 0.0f, 1000).also {
+                    it.after {
+                        game.respond("draw_event_done", true)
+                        if (tts) {
+                            val cardNames = game.context.resources.getStringArray(R.array.card_name)
+                            val text = cardNames[game.drawables[index].id % 13]
+                            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
     override fun end() {

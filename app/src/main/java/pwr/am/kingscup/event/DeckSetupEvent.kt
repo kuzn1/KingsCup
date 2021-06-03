@@ -1,5 +1,7 @@
 package pwr.am.kingscup.event
 
+import android.media.MediaPlayer
+import pwr.am.kingscup.R
 import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.render.Animation
 import pwr.am.kingscup.render.Card
@@ -7,13 +9,18 @@ import pwr.am.kingscup.render.Card
 class DeckSetupEvent(game : GameClient) : Event(game) {
     private lateinit var deck : ArrayList<Int>
     private var fastEnd = false
+    private lateinit var mediaPlayer : MediaPlayer
 
     fun deckInit(cards : ArrayList<Int>){
         deck = cards
     }
 
     override fun start() {
-        addNextCard(0)
+        mediaPlayer = MediaPlayer.create(game.context, R.raw.flipcard).also{
+            it.setOnPreparedListener{
+                addNextCard(0)
+            }
+        }
     }
 
     override fun end() {
@@ -30,7 +37,7 @@ class DeckSetupEvent(game : GameClient) : Event(game) {
             }
         }else if(index < deck.size){
             val card = Card(deck[index])
-
+            mediaPlayer.start()
             card.move(0.0f, -4.0f, -1.6f)
             card.animate(
                 Animation(0.0f, 0.0f, -1.6f, 0.0f, 0.0f, 0.0f, 300)
