@@ -73,7 +73,6 @@ class GameServer() : Service() {
         referenceGames.child(gameKey).child("gamedata").child("current_player_id").setValue(key)
     }
 
-    //todo needs some more work
     private fun addListenerToPlayers() {
         listenerToPlayers =
             referenceGames.child(gameKey).child("players").addChildEventListener(object :
@@ -321,8 +320,8 @@ class GameServer() : Service() {
     }
 
     var cardState = 0
-    var playerWithMaxTime = ""
-    var selectedPlayer = ""
+    private var playerWithMaxTime = ""
+    private var selectedPlayer = ""
 
     //based on card handles players responses
     private fun cardAction(response: Response) {
@@ -535,7 +534,6 @@ class GameServer() : Service() {
                 }
             }
         }
-
     }
 
     class Response(

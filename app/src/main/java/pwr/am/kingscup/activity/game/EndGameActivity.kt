@@ -3,8 +3,14 @@ package pwr.am.kingscup.activity.game
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import pwr.am.kingscup.R
@@ -14,11 +20,12 @@ import pwr.am.kingscup.databinding.ActivityEndGameBinding
 
 class EndGameActivity : Activity() {
 
-    private lateinit var binding : ActivityEndGameBinding
+    private lateinit var binding: ActivityEndGameBinding
     private var gameKey = ""
     private var owner = false
     private var playerKey = ""
     private var gameCode = ""
+    private lateinit var listenerToGames: ValueEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,25 +36,64 @@ class EndGameActivity : Activity() {
         owner = intent.getBooleanExtra("OWNER", false)
         playerKey = intent.getStringExtra("playerKey").toString()
         gameCode = intent.getStringExtra("gameCode").toString()
+
+        if (!owner) {
+            listenerToGames = Firebase.database.getReference("games").child(gameKey)
+                .addValueEventListener(object : ValueEventListener {
+
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.e("DSA", snapshot.toString())
+                        if (snapshot.value == "EndGameActivity")
+                            return
+                        if(snapshot.value == null){
+                            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+                            Toast.makeText(
+                                applicationContext,
+                                "Host left game",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            binding.lobbyButton.visibility = View.INVISIBLE
+                        }else{
+                            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+                            Toast.makeText(
+                                applicationContext,
+                                "Host is back in lobby",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+        }
+        else{
+            Firebase.database.getReference("games").child(gameKey).setValue("EndGameActivity")
+        }
     }
 
+
     fun lobby(view: View) {
-        if (owner){
+        if (owner) {
             val intent = Intent(this, LobbyActivity::class.java)
-            intent.putExtra("gameCode",gameCode)
+            intent.putExtra("gameCode", gameCode)
             intent.putExtra("gameKey", gameKey)
             intent.putExtra("OWNER", owner)
             intent.putExtra("playerKey", playerKey)
             intent.putExtra("recreate", true)
             startActivity(intent)
             finish()
-        }else{
+        } else {
             Firebase.database.getReference("openGames").child(gameCode).get().addOnSuccessListener {
                 if (it.child("gameCode").value == null) {
-                    Toast.makeText(applicationContext, getString(R.string.returnWaitForCreator), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.returnWaitForCreator),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
+                    Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
                     val intent = Intent(this, LobbyActivity::class.java)
-                    intent.putExtra("gameCode",gameCode)
+                    intent.putExtra("gameCode", gameCode)
                     intent.putExtra("gameKey", gameKey)
                     intent.putExtra("OWNER", owner)
                     intent.putExtra("playerKey", playerKey)
@@ -60,7 +106,12 @@ class EndGameActivity : Activity() {
         }
     }
 
-    fun leave(view: View) {
+    fun leave(view : View) {
+        if (owner){
+            Firebase.database.getReference("games").child(gameKey).removeValue()
+        }else{
+            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+        }
         startActivity(
             Intent(
                 this,
@@ -68,5 +119,9 @@ class EndGameActivity : Activity() {
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         )
         finish()
+    }
+
+    override fun onBackPressed() {
+        leave(View(this))
     }
 }
