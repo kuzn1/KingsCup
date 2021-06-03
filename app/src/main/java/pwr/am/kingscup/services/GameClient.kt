@@ -327,9 +327,7 @@ class GameClient(
             }
             "FinishGame" ->{
                 Log.e("Client ", "FinishGame")
-                referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
-                referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
-                referenceGames.child(gameKey).child("activity/tick").removeEventListener(listenerToActivityTick)
+                removeAllListeners()
                 context.startEndGameActivity()
             }
         }
@@ -432,6 +430,12 @@ class GameClient(
 
             else -> Log.e("GameClient", "Unhandled event response key! [$key]")
         }
+    }
+    fun removeAllListeners(){
+        Log.e("Client ", "removeAllListeners")
+        referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
+        referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
+        referenceGames.child(gameKey).child("activity/tick").removeEventListener(listenerToActivityTick)
     }
     data class Player(
         val playerKey: String,

@@ -74,6 +74,7 @@ class GameBoardActivity : Activity() {
     }
 
     override fun onBackPressed() {
+        gameClient.removeAllListeners()
         startActivity(
             Intent(
                 this,
