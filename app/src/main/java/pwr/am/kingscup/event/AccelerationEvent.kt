@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.ProgressBar
 import pwr.am.kingscup.Game
 import pwr.am.kingscup.PlayerLogic
 import kotlin.math.absoluteValue
@@ -16,6 +18,7 @@ class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
     private var state = 1
     private var time = 0L
     private var count = 0
+    private lateinit var progressBar : ProgressBar
 
     fun setUp(){
         state = 1
@@ -35,11 +38,22 @@ class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
             SensorManager.SENSOR_DELAY_GAME,
             SensorManager.SENSOR_DELAY_GAME
         )
+        game.context.runOnUiThread{
+            progressBar = ProgressBar(game.context)
+            game.context.addContentView(
+                progressBar,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            )
+        }
     }
 
     override fun end() {
         val sensorManager = (game.context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         sensorManager.unregisterListener(this)
+        game.context.runOnUiThread {
+            if (progressBar != null)
+                (progressBar.parent as ViewGroup).removeView(progressBar)
+        }
     }
 
     private fun up(){
@@ -47,7 +61,7 @@ class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
             state = 3
         }else if(state == 2){
             state = 0
-            game.respond("time", 0L)
+            game.respond("acceleration_event_time", 0L)
         }
         count = 0
     }
@@ -57,7 +71,7 @@ class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
             state = 3
         }else if(state == 1){
             state = 0
-            game.respond("time", 0L)
+            game.respond("acceleration_event_time", 0L)
         }
         count = 0
     }
@@ -68,7 +82,7 @@ class AccelerationEvent(game: PlayerLogic) : Event(game), SensorEventListener {
             if(count > 10) {
                 time = SystemClock.uptimeMillis() - time
                 state = 0
-                game.respond("time", time)
+                game.respond("acceleration_event_time", time)
             }
         }
     }

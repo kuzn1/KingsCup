@@ -12,13 +12,13 @@ class InfoAcceptEvent(game: PlayerLogic): Event(game) {
 
     private var text = ""
     private var buttonText = ""
-    private var key = "done"
+    private var key = "info_accept_event_done"
 
     fun setText(t : String){
         text = t
     }
 
-    fun setResponce(key : String){
+    fun setKey(key : String){
         this.key = key
     }
 

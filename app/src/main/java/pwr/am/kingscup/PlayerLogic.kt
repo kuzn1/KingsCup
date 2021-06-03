@@ -150,7 +150,7 @@ class PlayerLogic(
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
-                            (cardEvent as InfoAcceptEvent).setResponce("drink")
+                            (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         }
                     }
                     //Two - player chooses other player to take a drink
@@ -169,7 +169,7 @@ class PlayerLogic(
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
-                            (cardEvent as InfoAcceptEvent).setResponce("drink")
+                            (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
@@ -187,7 +187,7 @@ class PlayerLogic(
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
-                            (cardEvent as InfoAcceptEvent).setResponce("drink")
+                            (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Every male have to take a drink")
@@ -200,7 +200,7 @@ class PlayerLogic(
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
-                            (cardEvent as InfoAcceptEvent).setResponce("drink")
+                            (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             sendResponse("CardActionDone", "")
                             cardEvent = InfoEvent(this)
@@ -219,7 +219,7 @@ class PlayerLogic(
                             cardEvent = InfoAcceptEvent(this)
                             (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
                             (cardEvent as InfoAcceptEvent).setButtonText("I drank")
-                            (cardEvent as InfoAcceptEvent).setResponce("drink")
+                            (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             sendResponse("CardActionDone", "")
                             cardEvent = InfoEvent(this)
@@ -232,7 +232,7 @@ class PlayerLogic(
                         if (current_player_id == playerKey) {
                             cardEvent = PlayerChooseEvent(this)
                             (cardEvent as PlayerChooseEvent).setPlayers(playerArray)
-                            (cardEvent as PlayerChooseEvent).setKey("text")
+                            (cardEvent as PlayerChooseEvent).setKey("player_choose_event_queen")
                         } else {
                             cardEvent = InfoEvent(this)
                             (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.first == current_player_id }?.second} chooses another player to answer question")
@@ -243,7 +243,7 @@ class PlayerLogic(
                         cardEvent = InfoAcceptEvent(this)
                         (cardEvent as InfoAcceptEvent).setText("You have to finish your drink")
                         (cardEvent as InfoAcceptEvent).setButtonText("I finish")
-                        (cardEvent as InfoAcceptEvent).setResponce("drink")
+                        (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                     }
                 }
                 currentEvent.start()
@@ -253,7 +253,7 @@ class PlayerLogic(
                     currentEvent = InfoAcceptEvent(this)
                     (currentEvent as InfoAcceptEvent).setText("You have to take a drink")
                     (currentEvent as InfoAcceptEvent).setButtonText("I finish")
-                    (currentEvent as InfoAcceptEvent).setResponce("drink")
+                    (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
                     (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.first == current_player_id }?.second} have to take a drink")
@@ -265,9 +265,10 @@ class PlayerLogic(
                 if (playerKey == snapshot.child("selected_player_for_question").value.toString()) {
                     currentEvent.end()
                     currentEvent = TextInputEvent(this)
-                    (currentEvent as TextInputEvent).setHint(snapshot.child("question").value.toString())
+                    (currentEvent as TextInputEvent).setText(snapshot.child("question").value.toString())
+                    (currentEvent as TextInputEvent).setHint("answer")
                     (currentEvent as TextInputEvent).setButtonText("Answer")
-                    (currentEvent as TextInputEvent).setKey("answer")
+                    (currentEvent as TextInputEvent).setKey("text_input_event_answer")
                     (currentEvent as TextInputEvent).start()
 
                 } else {
@@ -297,7 +298,7 @@ class PlayerLogic(
                 currentEvent = InfoAcceptEvent(this)
                 (currentEvent as InfoAcceptEvent).setText("Ready for next?")
                 (currentEvent as InfoAcceptEvent).setButtonText("Yes")
-                (currentEvent as InfoAcceptEvent).setResponce("accept")
+                (currentEvent as InfoAcceptEvent).setKey("info_accept_event_accept")
                 currentEvent.start()
             }
             "FinishGame" ->{
@@ -331,11 +332,11 @@ class PlayerLogic(
                 }
             }
             is InfoAcceptEvent -> {
-                if (key == "drink") {
+                if (key == "info_accept_event_drink") {
                     sendResponse("CardActionDone", "")
                     currentEvent.end()
                 }
-                if (key == "accept") {
+                if (key == "info_accept_event_accept") {
                     currentEvent.end()
                     currentEvent = RemoveCardEvent(this)
                     (currentEvent as RemoveCardEvent).setCard(current_card_id)
@@ -344,23 +345,24 @@ class PlayerLogic(
                 }
             }
             is PlayerChooseEvent -> {
-                if (key == "player") {
+                if (key == "player_choose_event_player") {
                     currentEvent.end()
                     sendResponse("PickedPlayer", value.toString())
-                } else if (key == "text") {
+                } else if (key == "player_choose_event_queen") {
                     pickedPlayer = value.toString()
                     currentEvent.end()
                     currentEvent = TextInputEvent(this)
-                    (currentEvent as TextInputEvent).setButtonText("Write question")
-                    (currentEvent as TextInputEvent).setHint("")
+                    (currentEvent as TextInputEvent).setButtonText("Ask")
+                    (currentEvent as TextInputEvent).setText("Enter question")
+                    (currentEvent as TextInputEvent).setHint("question")
                     (currentEvent as TextInputEvent).start()
                 }
             }
             is TextInputEvent -> {
-                if (key == "text") {
+                if (key == "text_input_event_question") {
                     currentEvent.end()
                     sendResponse("PickedPlayer", pickedPlayer, value.toString())
-                } else if (key == "answer") {
+                } else if (key == "text_input_event_answer") {
                     currentEvent.end()
                     sendResponse("Answer", value.toString())
                 }
@@ -373,8 +375,11 @@ class PlayerLogic(
                 with(value as Long) {
                     if (this == 0L) {
                         (currentEvent as InfoEvent).setText("Wrong Move :(")
-                        sendResponse("Time", "1111111111")
-                    } else {
+                        sendResponse("Time", "5000")
+                    } else if(this == 5000L){
+                        (currentEvent as InfoEvent).setText("Timeout :(")
+                        sendResponse("Time", "5000")
+                    }else {
                         sendResponse("Time", value.toString())
                         (currentEvent as InfoEvent).setText("Your time: " + this.toString() + "ms")
                     }

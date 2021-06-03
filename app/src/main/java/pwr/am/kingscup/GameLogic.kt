@@ -27,19 +27,19 @@ class GameLogic() : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         gameKey = intent?.getStringExtra("gameKey").toString()
-        Log.e("ASDASD", gameKey)
+        Log.e("Server", gameKey)
         start()
         updateGameTick()
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun stopService(name: Intent?): Boolean {
-        Log.e("ASDASD", "stopclose")
+        Log.e("Server", "stopclose")
         return super.stopService(name)
     }
 
     override fun onDestroy() {
-        Log.e("ASDASD", "Destroyclose")
+        Log.e("Server", "Destroyclose")
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("responses").removeEventListener(listenerToResponses)
         referenceGames.child(gameKey).removeValue()
@@ -179,7 +179,7 @@ class GameLogic() : Service() {
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
-                    Log.e("ASDASD", snapshot.toString())
+                    Log.e("Server", snapshot.toString())
                     val response = Response(
                         snapshot.child("playerKey").value as String?,
                         (snapshot.child("server_tick").value as Long).toInt(),
@@ -198,16 +198,16 @@ class GameLogic() : Service() {
 
     //based on currentState handles responses
     fun responseToAction(response: Response) {
-        Log.e("ASDASD", "responseToAction")
+        Log.e("Server", "responseToAction")
         //pick random player
         if (currentPlayer == -1) {
-            Log.e("ASDASD", "PickingRandomPlayer")
+            Log.e("Server", "PickingRandomPlayer")
             currentPlayer = nextInt(0, playerCount)
         }
 
         //wait for all players to load
         if (currentState == State.WAITING_FOR_PLAYERS_TO_CONNECT) {
-            Log.e("ASDASD", "WAITING_FOR_PLAYERS_TO_CONNECT")
+            Log.e("Server", "WAITING_FOR_PLAYERS_TO_CONNECT")
             if (response.data == "Join") {
                 responseArray.add(response)
                 if (playerCount == responseArray.size) {
@@ -220,7 +220,7 @@ class GameLogic() : Service() {
 
         //wait until player picks card
         if (currentState == State.WAIT_FOR_PLAYER_TO_DRAW_CARD) {
-            Log.e("ASDASD", "WAIT_FOR_PLAYER_TO_DRAW_CARD")
+            Log.e("Server", "WAIT_FOR_PLAYER_TO_DRAW_CARD")
             if (response.playerKey == playerArray[currentPlayer].playerKey && response.server_tick == gameTick && response.data == "Drawn")
                 setNewGameStatus("CardAction")
             currentState = State.CARD_ACTION
@@ -229,14 +229,14 @@ class GameLogic() : Service() {
         }
         //card action
         if (currentState == State.CARD_ACTION) {
-            Log.e("ASDASD", "CARD_ACTION")
+            Log.e("Server", "CARD_ACTION")
             if (response.server_tick == gameTick) {
                 cardAction(response)
             }
             return
         }
         if (currentState == State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT) {
-            Log.e("ASDASD", "WAIT_FOR_ALL_PLAYERS_TO_ACCEPT")
+            Log.e("Server", "WAIT_FOR_ALL_PLAYERS_TO_ACCEPT")
             if (response.server_tick == gameTick && response.data == "Accepted") {
                 playerArray.find { response.playerKey == it.playerKey }?.responded = true
                 var temp = true
@@ -286,7 +286,7 @@ class GameLogic() : Service() {
         responseArray.clear()
         updateGameTick()
         Log.e(
-            "ASDASD",
+            "Server",
             "pickced new player $currentPlayer  ${playerArray[currentPlayer]} and card $currentCard"
         )
     }
@@ -308,11 +308,11 @@ class GameLogic() : Service() {
             7, 20, 33, 46,  //Eight - random players drinks
             12, 25, 38, 51  //King - all players finish drinks
             -> {
-                Log.e("ASDASD", "Ace/Three/Five/Six/Eight/King")
+                Log.e("Server", "Ace/Three/Five/Six/Eight/King")
                 if (response.data == "CardActionDone") {
                     responseArray.add(response)
                     playerArray.find { response.playerKey == it.playerKey }?.responded = true
-                    Log.e("ASDASD", playerArray.toString())
+                    Log.e("Server", playerArray.toString())
                     var temp = true
                     for (player in playerArray) {
                         if (player.responded == false && player.isOnline == true) {
@@ -320,7 +320,7 @@ class GameLogic() : Service() {
                         }
                     }
                     if (temp) {
-                        Log.e("ASDASD", "card action done")
+                        Log.e("Server", "card action done")
                         playerArray.forEach { it.responded = false }
                         responseArray.clear()
                         currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
@@ -332,7 +332,7 @@ class GameLogic() : Service() {
 
             1, 14, 27, 40  //Two - player chooses other player to take a drink
             -> {
-                Log.e("ASDASD", "Two")
+                Log.e("Server", "Two")
                 if (cardState == 0) {
                     if (response.data == "PickedPlayer" && response.playerKey == playerArray[currentPlayer].playerKey) {
                         cardState = 1
@@ -359,7 +359,7 @@ class GameLogic() : Service() {
             3, 16, 29, 42, //Four - last player to touch the floor has to drink
             6, 19, 32, 45  //Seven - last person to raise their hand has to drink
             -> {
-                Log.e("ASDASD", "Four/Seven")
+                Log.e("Server", "Four/Seven")
                 //wait for times
                 if (cardState == 0) {
                     if (response.data == "Time") {
@@ -372,7 +372,7 @@ class GameLogic() : Service() {
                             }
                         }
                         if (temp) {
-                            Log.e("ASDASD", "All times collected")
+                            Log.e("Server", "All times collected")
                             var max = responseArray[0].additionalData?.toLong()
                             playerWithMaxTime = responseArray[0].playerKey.toString()
                             for (i in responseArray) {
@@ -395,7 +395,7 @@ class GameLogic() : Service() {
                 //wait for player to drink
                 if (cardState == 1) {
                     if (response.playerKey == playerWithMaxTime) {
-                        Log.e("ASDASD", "card action done")
+                        Log.e("Server", "card action done")
                         cardState = 0
                         currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
                         setNewGameStatus("AcceptThisRound")
@@ -409,7 +409,7 @@ class GameLogic() : Service() {
             //todo question
             11, 24, 37, 50 //Queen - pick player and ask him question
             -> {
-                Log.e("ASDASD", "Queen")
+                Log.e("Server", "Queen")
                 if (cardState == 0) {
                     responseArray.clear()
                     if (response.data == "PickedPlayer" && response.playerKey == playerArray[currentPlayer].playerKey) {
@@ -445,7 +445,7 @@ class GameLogic() : Service() {
                     }
                     if (temp) {
                         cardState = 0
-                        Log.e("ASDASD", "card action done")
+                        Log.e("Server", "card action done")
                         playerArray.forEach { it.responded = false }
                         responseArray.clear()
                         currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT

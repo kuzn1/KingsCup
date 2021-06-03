@@ -16,13 +16,13 @@ class PlayerChooseEvent(game: PlayerLogic): Event(game) {
 
     private var binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
     private lateinit var players: ArrayList<Pair<String, String>>
+    private var key = "player_choose_event"
     private var chosen = false
-
 
     fun setPlayers(playerList: ArrayList<Pair<String, String>>) {
         players = playerList
     }
-    private var key = "player"
+
     fun setKey(key :String){
         this.key = key
     }

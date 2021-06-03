@@ -29,7 +29,7 @@ class RemoveCardEvent(game: PlayerLogic) : Event(game) {
                     if(!done) {
                         done = true
                         game.drawables[index].deleteFlag = true
-                        game.respond("done", true)
+                        game.respond("remove_card_event_done", true)
                     }
                 }
             }
@@ -37,9 +37,9 @@ class RemoveCardEvent(game: PlayerLogic) : Event(game) {
     }
 
     override fun end() {
-        if(!done) {
-            done = true
-            game.drawables[index].deleteFlag = true
-        }
+//        if(!done) {
+//            done = true
+//            game.drawables[index].deleteFlag = true
+//        }
     }
 }

@@ -50,6 +50,6 @@ class DeckSetupEvent(game : PlayerLogic) : Event(game) {
             game.drawables.add(card)
             return
         }
-        game.respond("done", true)
+        game.respond("deck_setup_event_done", true)
     }
 }

@@ -22,7 +22,7 @@ class DrawEvent(game: PlayerLogic) : Event(game) {
         if(index == 0) index = game.drawables.lastIndex
         game.drawables[index].animate(
             Animation(0.0f,0.0f,-2.0f, 0.0f,180.0f,0.0f,1000).also {
-                it.after { game.respond("done", true) }
+                it.after { game.respond("draw_event_done", true) }
             }
         )
     }
