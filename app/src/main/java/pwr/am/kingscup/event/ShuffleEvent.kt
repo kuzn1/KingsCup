@@ -27,22 +27,20 @@ class ShuffleEvent(game : GameClient) : Event(game) {
                 false
             ))
             game.drawables[i].animate(Animation(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,1000+150*i.toLong(), false))
-            game.drawables[i].animate(Animation(0.0f,0.0f,-6.0f,0.0f,180.0f,0.0f,150).also {
-                if(i == game.drawables.lastIndex && clickable){
-                    it.after {
-                        game.context.runOnUiThread {
-                            game.context.glView.setOnClickListener {
-                                animate = false
-                                game.respond("shuffle_event_drawn", true)
-                                game.context.glView.setOnClickListener {}
-                            }
-                        }
-                        animate = true
-                        reminderAnimation(game.drawables.last())
+            game.drawables[i].animate(Animation(0.0f,0.0f,-6.0f,0.0f,180.0f,0.0f,150))
+        }
+        if(clickable){
+            Timer("shuffle_click_listener_delay", false).schedule(game.drawables.size*150L+1000L){
+                game.context.runOnUiThread {
+                    game.context.glView.setOnClickListener {
+                        animate = false
+                        game.respond("shuffle_event_drawn", true)
+                        game.context.glView.setOnClickListener {}
                     }
                 }
-            })
-
+                animate = true
+                reminderAnimation(game.drawables.last())
+            }
         }
     }
 

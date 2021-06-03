@@ -43,19 +43,19 @@
     <string name="returnWaitForCreator">Room creator must first return to lobby</string>
     <string name="server_down">Server is down</string>
     <string-array name="card_name">
-        <item>Asso Salva</item>
-        <item>Due per te</item>
-        <item>Tre per me</item>
-        <item>Quattro piani</item>
-        <item>Cinque ragazzi</item>
-        <item>Sei pulcini</item>
-        <item>Sette Heven</item>
-        <item>Otto casuali</item>
-        <item>Nove WIP</item>
-        <item>Dieci WIP</item>
+        <item>Ace Save</item>
+        <item>Two for You</item>
+        <item>Three for Me</item>
+        <item>Four Floor</item>
+        <item>Five Guys</item>
+        <item>Six Chicks</item>
+        <item>Seven Heven</item>
+        <item>Eight Random</item>
+        <item>Nine WIP</item>
+        <item>Ten WIP</item>
         <item>Jack WIP</item>
-        <item>Domanda regina</item>
-        <item>Coppa del Re</item>
+        <item>Queen Question</item>
+        <item>Kings Cup</item>
     </string-array>
     <string-array name="card_texture_name_array">
         <item>Default</item>

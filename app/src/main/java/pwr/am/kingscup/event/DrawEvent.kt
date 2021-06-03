@@ -48,7 +48,7 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
     override fun onInit(status: Int) {
         if(status != TextToSpeech.ERROR){
             tts = true
-            textToSpeech.language = Locale.ITALIAN
+            textToSpeech.language = Locale.ENGLISH
         }
     }
 }
