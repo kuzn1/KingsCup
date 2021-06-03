@@ -54,6 +54,7 @@ class GameBoardActivity : Activity() {
         intent.putExtra("playerKey", playerKey)
         intent.putExtra("gameCode", gameCode)
         startActivity(intent)
+        finish()
     }
 
     override fun onPause() {

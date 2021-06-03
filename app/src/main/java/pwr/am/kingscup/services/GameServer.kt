@@ -509,7 +509,7 @@ class GameServer() : Service() {
             referenceActivity.setValue(playerMap)
             referenceActivity.child("tick").setValue(0L)
 
-            Timer("activity_check", false).schedule(5000){
+            Timer("activity_check", true).schedule(5000){
                 activityCheck(0L)
             }
         }
@@ -523,7 +523,7 @@ class GameServer() : Service() {
                 }
             }
             referenceActivity.child("tick").setValue(i+1)
-            Timer("activity_check", false).schedule(10000){
+            Timer("activity_check", true).schedule(10000){
                 activityCheck(i+1)
             }
         }

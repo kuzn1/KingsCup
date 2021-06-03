@@ -277,7 +277,7 @@ class GameClient(
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
-                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.playerKey == current_player_id }?.name} have to take a drink")
+                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.playerKey == snapshot.child("players_to_drink").value.toString() }?.name} have to take a drink")
 
                 }
                 currentEvent.start()
