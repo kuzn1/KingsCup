@@ -40,6 +40,7 @@
         \n
         github.com/kuzn1/KingsCup
     </string>
+    <string name="returnWaitForCreator">Room creator must first return to lobby</string>
     <string-array name="card_name">
         <item>Ace Save</item>
         <item>Two for You</item>

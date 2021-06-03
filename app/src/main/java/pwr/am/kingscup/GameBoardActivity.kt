@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Display
 import android.view.KeyEvent
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -21,11 +22,10 @@ class GameBoardActivity : Activity() {
     private var owner: Boolean = false
     private lateinit var gameKey: String
     private lateinit var playerKey: String
-    private lateinit var playerLogic : PlayerLogic
-    private lateinit var game : Game
+    private lateinit var playerLogic: PlayerLogic
+    private lateinit var gameCode: String
 
     lateinit var glView: OpenGLView
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,23 +34,17 @@ class GameBoardActivity : Activity() {
         owner = intent.getBooleanExtra("OWNER", false)
         playerKey = intent.getStringExtra("playerKey").toString()
         gameKey = intent.getStringExtra("gameKey").toString()
+        gameCode = intent.getStringExtra("gameCode").toString()
 
-        if(owner){
+        if (owner) {
             intent = Intent(this, GameLogic::class.java)
             intent.putExtra("gameKey", gameKey)
             startService(intent)
         }
 
-        //todo
-        //playerLogic.getPlayerGender()
-        //playerLogic = PlayerLogic(gameKey , playerKey)
-        //playerLogic.addListenerToGameData()
-
-
         glView = OpenGLView(this)
         setContentView(glView)
         glView.drawables.add(Background())
-        //game = Game(this, glView.drawables)
 
         playerLogic = PlayerLogic(gameKey, playerKey, this, glView.drawables)
         playerLogic.addListenerToPlayers()
@@ -58,6 +52,15 @@ class GameBoardActivity : Activity() {
         playerLogic.addListenerToGameData()
         playerLogic.setupDeck()
 
+    }
+
+    fun startEndGameActivity() {
+        val intent = Intent(this, EndGameActivity::class.java)
+        intent.putExtra("gameKey", gameKey)
+        intent.putExtra("OWNER", owner)
+        intent.putExtra("playerKey", playerKey)
+        intent.putExtra("gameCode", gameCode)
+        startActivity(intent)
     }
 
     override fun onPause() {

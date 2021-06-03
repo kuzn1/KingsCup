@@ -34,6 +34,24 @@ class Server()  {
         makeGamePublic()
         Log.wtf("Server", "Game created")
     }
+    fun recreateGame(code : String, key : String ){
+        gameCode = code
+        gameKey = key
+
+        val gameData = Gamedata(0,"waiting",0,0)
+        val game = Game(gameCode , gameData)
+        referenceGames.child(gameKey).setValue(game)
+        addCardsToGame()
+
+        addListenerToPlayers()
+        makeGamePublic()
+        Log.wtf("Server", "Game recreate")
+    }
+
+
+
+
+
     private fun generateRoomCode(){
         val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZ"
         gameCode =  (1..6)
@@ -75,6 +93,9 @@ class Server()  {
     //removes gameKey and gameCode from openGames
     fun makeGamePrivate(){
         openGames.child(gameCode).removeValue()
+    }
+    fun removeListenerToPlayers(){
+        referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
     }
 
     fun removeGame(){

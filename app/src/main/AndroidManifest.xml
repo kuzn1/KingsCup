@@ -63,6 +63,11 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         </activity>
+        <activity
+            android:name=".EndGameActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+        </activity>
         <service
             android:name=".GameLogic"
             android:enabled="true"

@@ -91,10 +91,11 @@ class GameLogic() : Service() {
 
                     //if less then 2 players left end service/game
                     if (playerCount == 0 || playerCount == 1) {
-                        Log.e("ASDASD", "stop service")
+                        Log.e("Server", "stop service")
                         stopSelf()
                         return
                     }
+
                     referenceGames.child(gameKey).child("gamedata").child("player_count")
                         .setValue(playerCount)
 
@@ -104,7 +105,6 @@ class GameLogic() : Service() {
                             responseToAction(Response(snapshot.key, gameTick, "Join", ""))
                         }
                         return
-
                     }
                     //current player
                     if (playerArray[currentPlayer].playerKey == snapshot.key) {
@@ -263,13 +263,20 @@ class GameLogic() : Service() {
             currentPlayer = (currentPlayer + 1) % playerArray.size
         setCurrentPlayerKey(playerArray[currentPlayer].playerKey)
 
+        //0 cards FinishGame
+        if(cardArray.size == 0){
+            Log.e("SERVER"," 0 cards left")
+            setNewGameStatus("FinishGame")
+            updateGameTick()
+            stopSelf()
+            return
+        }
+
         //pick card
         val temp = nextInt(0, cardArray.size)
-        //TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         currentCard = cardArray[temp].id
         setCurrentCardId(currentCard)
-        //currentCard = 11
-        //setCurrentCardId(11)
 
         cardArray.removeAt(temp)
 

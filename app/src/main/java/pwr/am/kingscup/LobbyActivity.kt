@@ -26,7 +26,12 @@ class LobbyActivity : Activity() {
         if (owner) {
             binding.startButton.visibility = View.VISIBLE
             server = Server()
-            server.createGame()
+            if(intent.getBooleanExtra("recreate", false)){
+                server.recreateGame(intent.getStringExtra("gameCode").toString(), intent.getStringExtra("gameKey").toString())
+            }else{
+                server.createGame()
+            }
+
             binding.idTextView.text = server.gameCode
             lobby = Lobby(server.gameKey)
         } else {
@@ -57,22 +62,24 @@ class LobbyActivity : Activity() {
 
     fun start() {
         if (owner) {
-            if(server.getPlayerCount()>1){
+            if (server.getPlayerCount() > 1) {
                 server.makeGamePrivate()
-            }else{
+                server.removeListenerToPlayers()
+            } else {
                 Toast.makeText(applicationContext, "NOT ENOUGH PLAYERS", Toast.LENGTH_SHORT).show()
                 return
             }
         }
 
-            Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
-            lobby.removeListeners()
+        Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
+        lobby.removeListeners()
 
-            val intent = Intent(this, GameBoardActivity::class.java)
-            intent.putExtra("gameKey", lobby.gameKey)
-            intent.putExtra("OWNER", owner)
-            intent.putExtra("playerKey", lobby.playerKey)
-            startActivityForResult(intent, 1)
+        val intent = Intent(this, GameBoardActivity::class.java)
+        intent.putExtra("gameKey", lobby.gameKey)
+        intent.putExtra("OWNER", owner)
+        intent.putExtra("playerKey", lobby.playerKey)
+        intent.putExtra("gameCode", binding.idTextView.text)
+        startActivityForResult(intent, 1)
     }
 
     fun onClick(view: View) {

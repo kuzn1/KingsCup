@@ -13,7 +13,7 @@ import com.google.firebase.ktx.Firebase
 import pwr.am.kingscup.databinding.ActivityCardChangeBinding
 import pwr.am.kingscup.databinding.CardChangeRowBinding
 
-class CardChangeActivity : Activity(){
+class   CardChangeActivity : Activity(){
 
     private lateinit var database : FirebaseDatabase
     private lateinit var referenceCards : DatabaseReference

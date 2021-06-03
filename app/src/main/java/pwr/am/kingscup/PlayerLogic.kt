@@ -1,7 +1,9 @@
 package pwr.am.kingscup
 
+import android.content.Intent
 import android.util.Log
 import android.util.Pair
+import androidx.core.content.ContextCompat.startActivity
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -60,7 +62,6 @@ class PlayerLogic(
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onCancelled(error: DatabaseError) {}
-
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     playerArray.add(
                         Pair(
@@ -87,9 +88,11 @@ class PlayerLogic(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Log.e("POGO", snapshot.toString())
-                    if (gameTick < (snapshot.child("server_tick").value as Long).toInt()) {
-                        gameTick = (snapshot.child("server_tick").value as Long).toInt()
-                        handleServerUpdate(snapshot)
+                    if(snapshot.child("server_tick").value != null) {
+                        if (gameTick < (snapshot.child("server_tick").value as Long).toInt()) {
+                            gameTick = (snapshot.child("server_tick").value as Long).toInt()
+                            handleServerUpdate(snapshot)
+                        }
                     }
                 }
 
@@ -124,16 +127,14 @@ class PlayerLogic(
         val current_player_id = snapshot.child("current_player_id").value.toString()
         current_card_id = (snapshot.child("current_card_id").value as Long).toInt()
         val game_status = snapshot.child("game_status").value.toString()
-
+        Log.e("OBECNA KARTA ", current_card_id.toString())
         currentEvent.end()
         when (game_status) {
             "DrawCard" -> {
-                if (current_player_id == playerKey) {
-
-                    currentEvent = ShuffleEvent(this)
-                    (currentEvent as ShuffleEvent).enableDraw()
-                    currentEvent.start()
-                }
+                currentEvent = ShuffleEvent(this)
+                if (current_player_id == playerKey)
+                        (currentEvent as ShuffleEvent).enableDraw()
+                currentEvent.start()
             }
             "CardAction" -> {
                 currentEvent = DrawEvent(this)
@@ -298,6 +299,11 @@ class PlayerLogic(
                 (currentEvent as InfoAcceptEvent).setButtonText("Yes")
                 (currentEvent as InfoAcceptEvent).setResponce("accept")
                 currentEvent.start()
+            }
+            "FinishGame" ->{
+                referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
+                referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
+                context.startEndGameActivity()
             }
         }
     }
