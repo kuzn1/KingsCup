@@ -139,9 +139,11 @@ class LobbyActivity : Activity() {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    if (data.getStringExtra("result") == "kick")
-                        Toast.makeText(this, getString(R.string.kickOutMsg), Toast.LENGTH_LONG).show()
+                    if (data.getStringExtra("result") == "kick") {
+                        Toast.makeText(this, getString(R.string.kickOutMsg), Toast.LENGTH_LONG)
+                            .show()
                         finish()
+                    }
                     if (data.getStringExtra("result") == "back") {
                         lobbyClient.addListenerToPlayer(this)
                         lobbyClient.addServerPlayerCountListener(this)
@@ -171,6 +173,7 @@ class LobbyActivity : Activity() {
     }
 
     override fun onBackPressed() {
+        Log.e("LobbyActivity", "onBackPressed")
         lobbyClient.removeListeners()
         lobbyClient.removePlayer()
         if (owner)

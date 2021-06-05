@@ -121,10 +121,10 @@ class LobbyClient(val gameKey : String) {
 
     //removes all listeners
     fun removeListeners(){
+        referenceGames.child(gameKey).child("players").child(playerKey).onDisconnect().cancel()
         removeListenerToPlayer()
         removeServerTickListener()
         removeServerPlayerCountListener()
-        referenceGames.child(gameKey).child("players").child(playerKey).onDisconnect().cancel()
 
     }
 
