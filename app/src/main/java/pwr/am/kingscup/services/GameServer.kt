@@ -249,10 +249,11 @@ class GameServer() : Service() {
         //wait until player picks card
         if (currentState == State.WAIT_FOR_PLAYER_TO_DRAW_CARD) {
             Log.e("Server", "WAIT_FOR_PLAYER_TO_DRAW_CARD")
-            if (response.playerKey == playerArray[currentPlayer].playerKey && response.server_tick == gameTick && response.data == "Drawn")
+            if (response.playerKey == playerArray[currentPlayer].playerKey && response.server_tick == gameTick && response.data == "Drawn") {
                 setNewGameStatus("CardAction")
-            currentState = State.CARD_ACTION
-            updateGameTick()
+                currentState = State.CARD_ACTION
+                updateGameTick()
+            }
             return
         }
         //card action
@@ -320,9 +321,8 @@ class GameServer() : Service() {
     }
 
     var cardState = 0
-    private var playerWithMaxTime = ""
     private var selectedPlayer = ""
-
+    private var playersToDrink = ArrayList<String>()
     //based on card handles players responses
     private fun cardAction(response: Response) {
 
@@ -401,19 +401,29 @@ class GameServer() : Service() {
                         }
                         if (temp) {
                             Log.e("Server", "All times collected")
-                            var max = responseArray[0].additionalData?.toLong()
-                            playerWithMaxTime = responseArray[0].playerKey.toString()
+                            playersToDrink.clear()
+
+                            responseArray.sortBy { it.additionalData?.toLong() }
                             for (i in responseArray) {
-                                if (i.additionalData?.toLong()!! > max!!) {
-                                    max = i.additionalData.toLong()
-                                    playerWithMaxTime = i.playerKey.toString()
+                                if (i.additionalData?.toLong()!! == 5000L) {
+                                    playersToDrink.add(i.playerKey.toString())
+                                    playerArray.find { i.playerKey.toString()== it.playerKey }?.responded = false
                                 }
                             }
-                            playerArray.forEach { it.responded = false }
+                            if(playersToDrink.isEmpty())
+                                playersToDrink.add(responseArray.maxByOrNull { it.additionalData?.toLong()!! }?.playerKey.toString())
+
                             responseArray.clear()
                             cardState = 1
+                            var string = "";
+                            for (player in playersToDrink){
+                                string = string.plus(player)
+                                string = string.plus("|")
+                            }
+                            string = string.dropLast(1)
+
                             referenceGames.child(gameKey).child("gamedata")
-                                .child("players_to_drink").setValue(playerWithMaxTime)
+                                .child("players_to_drink").setValue(string)
                             setNewGameStatus("Drinks")
                             updateGameTick()
                             return
@@ -422,14 +432,19 @@ class GameServer() : Service() {
                 }
                 //wait for player to drink
                 if (cardState == 1) {
-                    if (response.playerKey == playerWithMaxTime) {
-                        Log.e("Server", "card action done")
-                        cardState = 0
-                        currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
-                        setNewGameStatus("AcceptThisRound")
-                        updateGameTick()
-                        playerWithMaxTime = ""
-                        return
+                    if (playerArray.find { it.playerKey == response.playerKey }?.responded == false) {
+                        playerArray.find { it.playerKey == response.playerKey }?.responded = true
+                        playersToDrink.remove(response.playerKey)
+
+                        if (playersToDrink.isEmpty()){
+                            Log.e("Server", "card action done")
+                            cardState = 0
+                            currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
+                            setNewGameStatus("AcceptThisRound")
+                            updateGameTick()
+                            return
+                        }
+
                     }
                 }
             }

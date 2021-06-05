@@ -91,4 +91,8 @@ class   CardChangeActivity : Activity(){
         finish()
     }
 
+    override fun onBackPressed() {
+        back(View(this))
+    }
+
 }

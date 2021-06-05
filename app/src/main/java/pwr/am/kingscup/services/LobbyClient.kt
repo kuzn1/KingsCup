@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
 import pwr.am.kingscup.activity.lobby.LobbyActivity
 
 class LobbyClient(val gameKey : String) {
@@ -25,7 +26,6 @@ class LobbyClient(val gameKey : String) {
             ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.e("ASDASD", (snapshot.value as Long).toString())
                 if((snapshot.value as Long).toString() == "1"){
                     removeServerPlayerCountListener()
                     removeListenerToPlayer()
@@ -44,7 +44,6 @@ class LobbyClient(val gameKey : String) {
             ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.e("ASDASD", (snapshot.value as Long).toString())
                 if((snapshot.value as Long).toString() == "1"){
                    activity.start()
                 }
@@ -68,8 +67,6 @@ class LobbyClient(val gameKey : String) {
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                Toast.makeText(activity, "You got kick out!", Toast.LENGTH_LONG).show()
-
                 removeServerPlayerCountListener()
                 removeListenerToPlayer()
                 removeServerTickListener()
@@ -127,6 +124,8 @@ class LobbyClient(val gameKey : String) {
         removeListenerToPlayer()
         removeServerTickListener()
         removeServerPlayerCountListener()
+        referenceGames.child(gameKey).child("players").child(playerKey).onDisconnect().cancel()
+
     }
 
 

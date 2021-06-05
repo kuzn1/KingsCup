@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import pwr.am.kingscup.services.LobbyClient
@@ -122,6 +123,7 @@ class LobbyActivity : Activity() {
                 )
             }
             binding.idTextView -> {
+
                 val intent = Intent()
                 intent.action = Intent.ACTION_SEND
                 intent.putExtra(Intent.EXTRA_TEXT, binding.idTextView.text.toString())
@@ -138,6 +140,7 @@ class LobbyActivity : Activity() {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     if (data.getStringExtra("result") == "kick")
+                        Toast.makeText(this, getString(R.string.kickOutMsg), Toast.LENGTH_LONG).show()
                         finish()
                     if (data.getStringExtra("result") == "back") {
                         lobbyClient.addListenerToPlayer(this)
@@ -166,6 +169,19 @@ class LobbyActivity : Activity() {
             }
         }
     }
-    //TODO on leave
 
+    override fun onBackPressed() {
+        lobbyClient.removeListeners()
+        lobbyClient.removePlayer()
+        if (owner)
+            lobbyServer.removeGame()
+
+
+        startActivity(
+            Intent(
+                this,
+                MainActivity::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        )
+    }
 }

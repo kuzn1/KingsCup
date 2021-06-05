@@ -46,6 +46,7 @@ class   LobbyServer()  {
         addListenerToPlayers()
         makeGamePublic()
         Log.wtf("Server", "Game recreate")
+        Firebase.database.getReference("end_games").child(gameKey).removeValue()
     }
 
 
@@ -99,6 +100,7 @@ class   LobbyServer()  {
     }
 
     fun removeGame(){
+        Log.e("LobbyServer","removeGame" )
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("players").removeValue()
         openGames.child(gameCode).removeValue()

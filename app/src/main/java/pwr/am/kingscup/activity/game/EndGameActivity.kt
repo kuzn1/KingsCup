@@ -3,11 +3,8 @@ package pwr.am.kingscup.activity.game
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.view.isVisible
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -38,42 +35,42 @@ class EndGameActivity : Activity() {
         gameCode = intent.getStringExtra("gameCode").toString()
 
         if (!owner) {
-            listenerToGames = Firebase.database.getReference("games").child(gameKey)
+            listenerToGames = Firebase.database.getReference("end_games").child(gameKey)
                 .addValueEventListener(object : ValueEventListener {
-
-
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        Log.e("DSA", snapshot.toString())
                         if (snapshot.value == "EndGameActivity")
                             return
-                        if(snapshot.value == null){
-                            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+                        if (snapshot.value == null) {
+                            Firebase.database.getReference("end_games").child(gameKey)
+                                .removeEventListener(listenerToGames)
                             Toast.makeText(
                                 applicationContext,
-                                "Host left game",
+                                getString(R.string.HostLeft),
                                 Toast.LENGTH_LONG
                             ).show()
                             binding.lobbyButton.visibility = View.INVISIBLE
-                        }else{
-                            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+                        } else {
+                            Firebase.database.getReference("end_games").child(gameKey)
+                                .removeEventListener(listenerToGames)
                             Toast.makeText(
                                 applicationContext,
-                                "Host is back in lobby",
+                                getString(R.string.HostIsBack),
                                 Toast.LENGTH_LONG
                             ).show()
                         }
                     }
+
                     override fun onCancelled(error: DatabaseError) {}
                 })
-        }
-        else{
-            Firebase.database.getReference("games").child(gameKey).setValue("EndGameActivity")
+        } else {
+            Firebase.database.getReference("end_games").child(gameKey).setValue("EndGameActivity")
         }
     }
 
 
     fun lobby(view: View) {
         if (owner) {
+            Firebase.database.getReference("end_games").child(gameKey).setValue("Lobby")
             val intent = Intent(this, LobbyActivity::class.java)
             intent.putExtra("gameCode", gameCode)
             intent.putExtra("gameKey", gameKey)
@@ -91,7 +88,8 @@ class EndGameActivity : Activity() {
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
-                    Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+                    Firebase.database.getReference("end_games").child(gameKey)
+                        .removeEventListener(listenerToGames)
                     val intent = Intent(this, LobbyActivity::class.java)
                     intent.putExtra("gameCode", gameCode)
                     intent.putExtra("gameKey", gameKey)
@@ -106,11 +104,12 @@ class EndGameActivity : Activity() {
         }
     }
 
-    fun leave(view : View) {
-        if (owner){
-            Firebase.database.getReference("games").child(gameKey).removeValue()
-        }else{
-            Firebase.database.getReference("games").child(gameKey).removeEventListener(listenerToGames)
+    fun leave(view: View) {
+        if (owner) {
+            Firebase.database.getReference("end_games").child(gameKey).removeValue()
+        } else {
+            Firebase.database.getReference("end_games").child(gameKey)
+                .removeEventListener(listenerToGames)
         }
         startActivity(
             Intent(

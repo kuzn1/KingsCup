@@ -88,9 +88,7 @@ class PlayerViewActivity : Activity() {
             binding.playerList.addView(row.root)
         }
     }
-
-    //TODO BAN
-    fun kickPlayer(playerID: String) {
+    private fun kickPlayer(playerID: String) {
         referenceGames.child(gameKey).child("players").child(playerID).removeValue()
         Toast.makeText(this, "Kick player:" + playerID, Toast.LENGTH_SHORT).show()
     }
@@ -105,13 +103,7 @@ class PlayerViewActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        referenceGames.child(gameKey).child("players").removeEventListener(listener)
-        lobbyClient.removeServerTickListener()
-        val intent = Intent()
-        intent.putExtra("result", "back");
-        this.setResult(RESULT_OK, intent)
-        finish()
-        super.onBackPressed()
+        back(View(this))
     }
 
 

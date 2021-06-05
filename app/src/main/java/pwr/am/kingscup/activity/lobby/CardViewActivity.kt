@@ -69,12 +69,7 @@ class CardViewActivity : Activity(){
         finish()
     }
     override fun onBackPressed() {
-        lobbyClient.removeServerTickListener()
-        lobbyClient.removeListenerToPlayer()
-        val intent = Intent()
-        intent.putExtra("result", "back")
-        this.setResult(RESULT_OK, intent)
-        finish()
+        back(View(this))
     }
 
     fun changeCards(view: View) {
@@ -83,5 +78,4 @@ class CardViewActivity : Activity(){
             0
         )
     }
-    //TODO on destroy
 }

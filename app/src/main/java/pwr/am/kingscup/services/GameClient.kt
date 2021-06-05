@@ -243,7 +243,7 @@ class GameClient(
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("You where lucky :)")
+                            (cardEvent as InfoEvent).setText("Random players drink\nYou where lucky :)")
                             (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
@@ -270,14 +270,25 @@ class GameClient(
             }
             "Drinks" -> {
                 Log.e("Client ", "Drinks")
-                if (playerKey == snapshot.child("players_to_drink").value.toString()) {
+                val playersToDrink =  snapshot.child("players_to_drink").value.toString().split("|")
+
+                if (playersToDrink.find { it == playerKey } != null) {
                     currentEvent = InfoAcceptEvent(this)
                     (currentEvent as InfoAcceptEvent).setText("You have to take a drink")
                     (currentEvent as InfoAcceptEvent).setButtonText("I finish")
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
-                    (currentEvent as InfoEvent).setText("Player  ${playerArray.find { it.playerKey == snapshot.child("players_to_drink").value.toString() }?.name} have to take a drink")
+                    var string = ""
+                    for(player in playersToDrink)
+                            if(playerArray.find { it.playerKey == player }?.name != null){
+                                string = string.plus(playerArray.find { it.playerKey == player }?.name)
+                                string = string.plus(", ")
+                                }
+                    string = string.dropLast(2)
+
+
+                    (currentEvent as InfoEvent).setText("Players: $string have to take a drink")
 
                 }
                 currentEvent.start()
@@ -316,7 +327,6 @@ class GameClient(
                     sendResponse("CardActionDone", "")
                 }
             }
-
             "AcceptThisRound" -> {
                 Log.e("Client ", "AcceptThisRound")
                 currentEvent = InfoAcceptEvent(this)
