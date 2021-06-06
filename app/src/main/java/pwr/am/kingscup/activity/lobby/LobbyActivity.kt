@@ -47,7 +47,6 @@ class LobbyActivity : Activity() {
         }
         lobbyClient.addServerPlayerCountListener(this)
         lobbyClient.addPlayerToServer(
-            //TODO defValue for nick should be random, or required on First login
             config.getString("nick", "Player"),
             config.getString("gender", "female")
         )

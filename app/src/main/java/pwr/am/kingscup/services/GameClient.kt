@@ -44,8 +44,6 @@ class GameClient(
     var enableSfxSound = true
     var enableCardSound = true
 
-    //todo player Listener
-    //todo disconnect
 
     override fun onInit(status: Int) {
         if(status != TextToSpeech.ERROR){

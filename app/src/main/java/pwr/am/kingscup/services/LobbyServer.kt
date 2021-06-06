@@ -10,7 +10,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
-class   LobbyServer()  {
+class LobbyServer()  {
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")
@@ -26,14 +26,13 @@ class   LobbyServer()  {
 
         val gameData = Gamedata(0,"waiting",0,0)
         val game = Game(gameCode , gameData)
-        gameCode = "DEVDEV"
         gameKey = referenceGames.push().key.toString()
         referenceGames.child(gameKey).setValue(game)
         addCardsToGame()
 
         addListenerToPlayers()
         makeGamePublic()
-        Log.wtf("Server", "Game created")
+        Log.e("Server", "Game created")
     }
     fun recreateGame(code : String, key : String ){
         gameCode = code
@@ -46,7 +45,7 @@ class   LobbyServer()  {
 
         addListenerToPlayers()
         makeGamePublic()
-        Log.wtf("Server", "Game recreate")
+        Log.e("Server", "Game recreate")
         Firebase.database.getReference("end_games").child(gameKey).removeValue()
     }
 
@@ -70,7 +69,6 @@ class   LobbyServer()  {
     }
 
     //updates player_count
-    //TODO remove event listener when not needed
     fun addListenerToPlayers(){
         listenerToPlayers = referenceGames.child(gameKey).child("players").addChildEventListener(object :
             ChildEventListener {

@@ -117,7 +117,6 @@ class Card(id : Int): Drawable(id) {
 
     init {
         position[2] = -1.6f
-        //todo assign texture based on card ID
         textureIndex = id
     }
 
