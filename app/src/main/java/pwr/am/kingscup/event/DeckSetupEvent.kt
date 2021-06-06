@@ -37,7 +37,7 @@ class DeckSetupEvent(game : GameClient) : Event(game) {
             }
         }else if(index < deck.size){
             val card = Card(deck[index])
-            mediaPlayer.start()
+            if(game.enableSfxSound) mediaPlayer.start()
             card.move(0.0f, -4.0f, -1.8f)
             card.animate(
                 Animation(0.0f, 0.0f, -1.8f, 0.0f, 0.0f, 0.0f, 300)

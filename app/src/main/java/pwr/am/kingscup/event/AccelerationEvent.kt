@@ -58,8 +58,10 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
                 progress++
                 progressBar.progress = progress
                 if (progress == 100) {
-                    state = 0
-                    game.respond("acceleration_event_time", 5000L)
+                    if(state != 0) {
+                        state = 0
+                        game.respond("acceleration_event_time", 5000L)
+                    }
                 } else {
                     startProgressTimer()
                 }
@@ -68,6 +70,7 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
     }
 
     override fun end() {
+        state = 0
         val sensorManager = (game.context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         sensorManager.unregisterListener(this)
 

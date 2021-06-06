@@ -39,7 +39,7 @@ class GameClient(
     private var cardEvent: Event = DeckSetupEvent(this)
     private var playerArray = ArrayList<Player>()
     private var pickedPlayer = ""
-    var textToSpeech  = TextToSpeech(context, this)
+    lateinit var textToSpeech  : TextToSpeech
     var ttsInitialized = false
     var enableSfxSound = true
     var enableCardSound = true
@@ -52,6 +52,10 @@ class GameClient(
             textToSpeech.language = Locale.ENGLISH
             if(enableCardSound) ttsInitialized = true
         }
+    }
+
+    fun initTTS(){
+        textToSpeech = TextToSpeech(context, this)
     }
 
     private fun sendResponse(
@@ -355,7 +359,7 @@ class GameClient(
 
                 if (playersToDrink.find { it == playerKey } != null) {
                     currentEvent = InfoAcceptEvent(this)
-                    (currentEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink) + "\n $string")
+                    (currentEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink) + "\n\n $string")
                     (currentEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {

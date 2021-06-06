@@ -53,6 +53,8 @@ class GameBoardActivity : Activity() {
         val config = getSharedPreferences("KingsCupConfig", MODE_PRIVATE)
         gameClient.enableCardSound = config.getBoolean("cardSound", true)
         gameClient.enableSfxSound = config.getBoolean("sfxSound", true)
+        Log.e("GameClient", "SFX:${gameClient.enableSfxSound} Card:${gameClient.enableCardSound}")
+        gameClient.initTTS()
 
         if(owner) {
             menuButton = Button(ContextThemeWrapper(this, R.style.menuButton), null, R.style.menuButton)

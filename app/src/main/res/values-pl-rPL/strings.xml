@@ -70,7 +70,7 @@
     <string name="questionAnswer">Pytanie: %1$s\nOdpowiedź: %2$s</string>
     <string name="startingGame">Rozpoczynanie rozgrywki</string>
     <string name="notEnoughPlayers">Za mała liczba graczy</string>
-    <string name="youAreNoTheLastOne">Nie jesteś ostatni\n %1$s</string>
+    <string name="youAreNoTheLastOne">Nie jesteś ostatni\n\n %1$s</string>
     <string name="kickedPlayer">Wyrzucony gracz:</string>
     <string name="wrongId">Złe ID</string>
     <string-array name="card_name">

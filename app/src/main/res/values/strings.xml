@@ -70,7 +70,7 @@
     <string name="questionAnswer">Question: %1$s\nAnswer: %2$s</string>
     <string name="startingGame">Starting the game</string>
     <string name="notEnoughPlayers">Not enough players</string>
-    <string name="youAreNoTheLastOne">You are not the last one\n %1$s</string>
+    <string name="youAreNoTheLastOne">You are not the last one\n\n %1$s</string>
     <string name="kickedPlayer">Kicked player:</string>
     <string name="wrongId">Wrong ID</string>
     <string-array name="card_name">
