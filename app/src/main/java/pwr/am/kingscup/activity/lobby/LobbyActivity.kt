@@ -72,12 +72,12 @@ class LobbyActivity : Activity() {
                 lobbyServer.makeGamePrivate()
                 lobbyServer.removeListenerToPlayers()
             } else {
-                Toast.makeText(applicationContext, "NOT ENOUGH PLAYERS", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.notEnoughPlayers), Toast.LENGTH_SHORT).show()
                 return
             }
         }
 
-        Toast.makeText(applicationContext, "STARTING THE GAME", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, getString(R.string.startingGame), Toast.LENGTH_SHORT).show()
         lobbyClient.removeListeners()
 
         val intent = Intent(this, GameBoardActivity::class.java)

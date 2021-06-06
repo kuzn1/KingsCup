@@ -355,12 +355,12 @@ class GameClient(
 
                 if (playersToDrink.find { it == playerKey } != null) {
                     currentEvent = InfoAcceptEvent(this)
-                    (currentEvent as InfoAcceptEvent).setText("You have to take a drink\n $string")
-                    (currentEvent as InfoAcceptEvent).setButtonText("I finish")
+                    (currentEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink) + "\n $string")
+                    (currentEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
-                    (currentEvent as InfoEvent).setText("Players:\n $string have to take a drink")
+                    (currentEvent as InfoEvent).setText(context.getString(R.string.youAreNoTheLastOne, string))
 
                 }
                 currentEvent.start()

@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
 import pwr.am.kingscup.activity.lobby.LobbyActivity
 import pwr.am.kingscup.databinding.ActivityJoinBinding
 
@@ -26,7 +27,7 @@ class JoinActivity : Activity() {
                 val id = binding.textInput.editableText.toString()
                 Firebase.database.getReference("openGames").child(id).get().addOnSuccessListener {
                     if (it.child("gameCode").value == null || id.length < 6) {
-                        Toast.makeText(applicationContext, "Wrong ID", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, getString(R.string.wrongId), Toast.LENGTH_SHORT).show()
                     } else {
                         val intent = Intent(this, LobbyActivity::class.java)
                         intent.putExtra("gameCode", it.child("gameCode").value.toString())

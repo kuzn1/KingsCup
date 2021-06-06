@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import pwr.am.kingscup.R
 import pwr.am.kingscup.services.LobbyClient
 import pwr.am.kingscup.databinding.ActivityPlayerViewBinding
 import pwr.am.kingscup.databinding.PlayerViewRowBinding
@@ -91,7 +92,7 @@ class PlayerViewActivity : Activity() {
     }
     private fun kickPlayer(playerID: String) {
         referenceGames.child(gameKey).child("players").child(playerID).removeValue()
-        Toast.makeText(this, "Kick player:" + playerID, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.kickedPlayer) + playerID, Toast.LENGTH_SHORT).show()
     }
 
     fun back(view: View) {
