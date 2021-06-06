@@ -140,8 +140,6 @@ class LobbyActivity : Activity() {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     if (data.getStringExtra("result") == "kick") {
-                        Toast.makeText(this, getString(R.string.kickOutMsg), Toast.LENGTH_LONG)
-                            .show()
                         finish()
                     }
                     if (data.getStringExtra("result") == "back") {

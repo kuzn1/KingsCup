@@ -63,11 +63,11 @@ class PlayerViewActivity : Activity() {
                         setResult(RESULT_OK, intent)
                         finish()
                     }
-
                     val iter = players.iterator()
                     while(iter.hasNext()){
                         if(iter.next().second == snapshot.key.toString())
                             iter.remove()
+
                     }
                     loadPlayers(intent.getBooleanExtra("OWNER", false))
                 }

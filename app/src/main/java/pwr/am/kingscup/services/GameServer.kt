@@ -21,8 +21,8 @@ class GameServer() : Service() {
     private val database = Firebase.database
 
     private var referenceGames = database.getReference("games")
-    private lateinit var referenceActivity : DatabaseReference
-    private lateinit var referencePlayers : DatabaseReference
+    private lateinit var referenceActivity: DatabaseReference
+    private lateinit var referencePlayers: DatabaseReference
     private var gameTick = 0
     private var playerCount = 0
     private lateinit var listenerToPlayers: ChildEventListener
@@ -82,7 +82,12 @@ class GameServer() : Service() {
                 ChildEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onChildChanged(
+                    snapshot: DataSnapshot,
+                    previousChildName: String?
+                ) {
+                }
+
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     playerCount++
                     referenceGames.child(gameKey).child("gamedata").child("player_count")
@@ -128,68 +133,68 @@ class GameServer() : Service() {
 
                     pickNextPlayerAndSendNewCard()
                     /*
-                    } else {
-                        //card handling
-                        when (currentCard) {
-                            0, 13, 26, 39,
-                            2, 15, 28, 41,
-                            4, 17, 30, 43,
-                            5, 18, 31, 44,
-                            7, 20, 33, 46,
-                            12, 25, 38, 51 -> {
+                } else {
+                    //card handling
+                    when (currentCard) {
+                        0, 13, 26, 39,
+                        2, 15, 28, 41,
+                        4, 17, 30, 43,
+                        5, 18, 31, 44,
+                        7, 20, 33, 46,
+                        12, 25, 38, 51 -> {
+                            if (responseArray.find { it.playerKey == snapshot.key } == null) {
+                                responseToAction(
+                                    Response(
+                                        snapshot.key,
+                                        gameTick,
+                                        "CardActionDone",
+                                        ""
+                                    )
+                                )
+                            }
+                        }
+                        1, 14, 27, 40 -> {
+                            if (cardState == 1 && selectedPlayer == snapshot.key) {
+                                selectedPlayer = ""
+                                cardState = 0
+                                pickNextPlayerAndSendNewCard()
+                            }
+                        }
+                        3, 16, 29, 42,
+                        6, 19, 32, 45 -> {
+                            if (cardState == 0) {
                                 if (responseArray.find { it.playerKey == snapshot.key } == null) {
                                     responseToAction(
                                         Response(
-                                            snapshot.key,
-                                            gameTick,
-                                            "CardActionDone",
-                                            ""
+                                            snapshot.key, gameTick, "Time", "-1"
+                                        )
+                                    )
+                                }
+                            } else {
+                                if (snapshot.key == playerWithMaxTime) {
+                                    playerWithMaxTime = ""
+                                    cardState = 0
+                                    pickNextPlayerAndSendNewCard()
+                                }
+                            }
+                        }
+                        11, 24, 37, 50 -> {
+                            if (cardState == 1 && selectedPlayer == snapshot.key) {
+                                selectedPlayer = ""
+                                cardState = 0
+                                pickNextPlayerAndSendNewCard()
+                            } else if(cardState == 2){
+                                if (responseArray.find { it.playerKey == snapshot.key } == null) {
+                                    responseToAction(
+                                        Response(
+                                            snapshot.key, gameTick, "CardActionDone", ""
                                         )
                                     )
                                 }
                             }
-                            1, 14, 27, 40 -> {
-                                if (cardState == 1 && selectedPlayer == snapshot.key) {
-                                    selectedPlayer = ""
-                                    cardState = 0
-                                    pickNextPlayerAndSendNewCard()
-                                }
-                            }
-                            3, 16, 29, 42,
-                            6, 19, 32, 45 -> {
-                                if (cardState == 0) {
-                                    if (responseArray.find { it.playerKey == snapshot.key } == null) {
-                                        responseToAction(
-                                            Response(
-                                                snapshot.key, gameTick, "Time", "-1"
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    if (snapshot.key == playerWithMaxTime) {
-                                        playerWithMaxTime = ""
-                                        cardState = 0
-                                        pickNextPlayerAndSendNewCard()
-                                    }
-                                }
-                            }
-                            11, 24, 37, 50 -> {
-                                if (cardState == 1 && selectedPlayer == snapshot.key) {
-                                    selectedPlayer = ""
-                                    cardState = 0
-                                    pickNextPlayerAndSendNewCard()
-                                } else if(cardState == 2){
-                                    if (responseArray.find { it.playerKey == snapshot.key } == null) {
-                                        responseToAction(
-                                            Response(
-                                                snapshot.key, gameTick, "CardActionDone", ""
-                                            )
-                                        )
-                                    }
-                                }
-                            }
                         }
-                    }*/
+                    }
+                }*/
                 }
             })
     }
@@ -200,7 +205,12 @@ class GameServer() : Service() {
                 ChildEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onChildChanged(
+                    snapshot: DataSnapshot,
+                    previousChildName: String?
+                ) {
+                }
+
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
@@ -296,8 +306,8 @@ class GameServer() : Service() {
         setCurrentPlayerKey(playerArray[currentPlayer].playerKey)
 
         //0 cards FinishGame
-        if(cardArray.size == 0){
-            Log.e("Server"," 0 cards left")
+        if (cardArray.size == 0) {
+            Log.e("Server", " 0 cards left")
             setNewGameStatus("FinishGame")
             updateGameTick()
             stopSelf()
@@ -326,6 +336,7 @@ class GameServer() : Service() {
     var cardState = 0
     private var selectedPlayer = ""
     private var playersToDrink = ArrayList<String>()
+
     //based on card handles players responses
     private fun cardAction(response: Response) {
 
@@ -368,7 +379,8 @@ class GameServer() : Service() {
                     if (response.data == "PickedPlayer" && response.playerKey == playerArray[currentPlayer].playerKey) {
                         cardState = 1
                         selectedPlayer = response.additionalData.toString()
-                        referenceGames.child(gameKey).child("gamedata").child("players_to_drink")
+                        referenceGames.child(gameKey).child("gamedata")
+                            .child("players_to_drink")
                             .setValue(selectedPlayer)
                         setNewGameStatus("Drinks")
                         updateGameTick()
@@ -395,7 +407,8 @@ class GameServer() : Service() {
                 if (cardState == 0) {
                     if (response.data == "Time") {
                         responseArray.add(response)
-                        playerArray.find { response.playerKey == it.playerKey }?.responded = true
+                        playerArray.find { response.playerKey == it.playerKey }?.responded =
+                            true
                         var temp = true
                         for (player in playerArray) {
                             if (player.responded == false && player.isOnline == true) {
@@ -407,28 +420,46 @@ class GameServer() : Service() {
                             playersToDrink.clear()
 
                             responseArray.sortBy { it.additionalData?.toLong() }
-                            for (i in responseArray) {
-                                if (i.additionalData?.toLong()!! == 5000L) {
-                                    playersToDrink.add(i.playerKey.toString())
-                                    playerArray.find { i.playerKey.toString()== it.playerKey }?.responded = false
-                                }
+
+                            val maxTime =
+                                responseArray.maxByOrNull { it.additionalData?.toLong()!! }?.additionalData?.toLong()!!
+
+                            for (r in responseArray)
+                                if (r.additionalData!!.toLong() == maxTime)
+                                    playersToDrink.add(r.playerKey.toString())
+
+
+
+                            cardState = 1
+                            var string = "";
+                            for (player in responseArray) {
+                                string = string.plus(player.playerKey)
+                                string = string.plus("|")
+                                string = string.plus(player.additionalData)
+                                string = string.plus("|")
+
                             }
-                            if(playersToDrink.isEmpty())
-                                playersToDrink.add(responseArray.maxByOrNull { it.additionalData?.toLong()!! }?.playerKey.toString())
+
+                            var string2 = ""
+                            for (player in playersToDrink) {
+                                string2 = string2.plus(player)
+                                string2 = string2.plus("|")
+                            }
+                            string2 = string2.dropLast(1)
+
+
+
 
                             responseArray.clear()
-                            cardState = 1
-                            var string = ""
-                            for (player in playersToDrink){
-                                string = string.plus(player)
-                                string = string.plus("|")
-                            }
                             string = string.dropLast(1)
+                            playerArray.forEach { it.responded = false }
 
                             referenceGames.child(gameKey).child("gamedata")
-                                .child("players_to_drink").setValue(string)
-                            playerArray.forEach { it.responded = false }
-                            setNewGameStatus("Drinks")
+                                .child("players_to_drink_with_time").setValue(string)
+
+                            referenceGames.child(gameKey).child("gamedata")
+                                .child("players_to_drink").setValue(string2)
+                            setNewGameStatus("MultipleDrinks")
                             updateGameTick()
                             return
                         }
@@ -437,11 +468,13 @@ class GameServer() : Service() {
                 //wait for player to drink
                 if (cardState == 1) {
                     if (playerArray.find { it.playerKey == response.playerKey }?.responded == false) {
-                        playerArray.find { it.playerKey == response.playerKey }?.responded = true
+                        playerArray.find { it.playerKey == response.playerKey }?.responded =
+                            true
                         playersToDrink.remove(response.playerKey)
 
-                        if (playersToDrink.isEmpty()){
+                        if (playersToDrink.isEmpty()) {
                             Log.e("Server", "card action done")
+                            playerArray.forEach { it.responded = false }
                             cardState = 0
                             currentState = State.WAIT_FOR_ALL_PLAYERS_TO_ACCEPT
                             setNewGameStatus("AcceptThisRound")
@@ -480,7 +513,7 @@ class GameServer() : Service() {
                         return
                     }
                 }
-                if (cardState == 2 && response.data == "CardActionDone"){
+                if (cardState == 2 && response.data == "CardActionDone") {
                     responseArray.add(response)
                     playerArray.find { response.playerKey == it.playerKey }?.responded = true
                     var temp = true
@@ -511,9 +544,9 @@ class GameServer() : Service() {
 
         val referenceCards = referenceGames.child(gameKey).child("card_set")
 
-        referenceCards.get().addOnSuccessListener{
-            for (i in 0..51){
-                if((it.child(i.toString()).value as Long).toInt()>0)
+        referenceCards.get().addOnSuccessListener {
+            for (i in 0..51) {
+                if ((it.child(i.toString()).value as Long).toInt() > 0)
                     cardArray.add(Card(i, (it.child(i.toString()).value as Long).toInt()))
             }
             addListenerToResponses()
@@ -527,20 +560,20 @@ class GameServer() : Service() {
 
         val playerMap = HashMap<String, Long>()
         referencePlayers.get().addOnSuccessListener {
-            for(player in it.children)
+            for (player in it.children)
                 playerMap.put(player.key as String, 0L)
 
             referenceActivity.setValue(playerMap)
             referenceActivity.child("tick").setValue(0L)
 
-            Timer("activity_check", true).schedule(5000){
+            Timer("activity_check", true).schedule(5000) {
                 activityCheck(0L)
             }
         }
     }
 
     private fun activityCheck(i: Long) {
-        if(ActivityCheck) {
+        if (ActivityCheck) {
             referenceActivity.get().addOnSuccessListener {
                 for (player in it.children) {
                     if ((player.value as Long) < i) {
@@ -563,19 +596,19 @@ class GameServer() : Service() {
         val additionalData2: String? = null
     )
 
-    private data class Player(
+    data class Player(
         val playerKey: String,
         val gender: String? = null,
         var isOnline: Boolean? = true,
         var responded: Boolean? = false
     )
 
-    private data class Card(
+    data class Card(
         val id: Int,
         val count: Int
     )
 
-    private enum class State {
+    enum class State {
         WAITING_FOR_PLAYERS_TO_CONNECT,
         WAIT_FOR_PLAYER_TO_DRAW_CARD,
         CARD_ACTION,

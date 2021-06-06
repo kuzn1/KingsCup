@@ -27,6 +27,7 @@ class   LobbyServer()  {
 
         val gameData = Gamedata(0,"waiting",0,0)
         val game = Game(gameCode , gameData)
+        gameCode = "DEVDEV"
         gameKey = referenceGames.push().key.toString()
         referenceGames.child(gameKey).setValue(game)
         addCardsToGame()

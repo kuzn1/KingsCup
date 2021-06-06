@@ -95,6 +95,8 @@ class GameBoardActivity : Activity() {
 
     override fun onBackPressed() {
         gameClient.removeAllListeners()
+        if(owner)
+            stopService(Intent(this, GameServer::class.java))
         startActivity(
             Intent(
                 this,

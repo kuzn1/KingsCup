@@ -67,6 +67,8 @@ class LobbyClient(val gameKey : String) {
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildRemoved(snapshot: DataSnapshot) {
+                Toast.makeText(activity, activity.getString(R.string.kickOutMsg), Toast.LENGTH_LONG)
+                    .show()
                 removeServerPlayerCountListener()
                 removeListenerToPlayer()
                 removeServerTickListener()
