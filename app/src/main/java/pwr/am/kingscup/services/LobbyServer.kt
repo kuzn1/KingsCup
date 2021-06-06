@@ -22,8 +22,7 @@ class   LobbyServer()  {
     var gameKey : String = ""
 
     fun createGame(){
-        //generateRoomCode()
-        gameCode="DEVDEV"
+        generateRoomCode()
 
         val gameData = Gamedata(0,"waiting",0,0)
         val game = Game(gameCode , gameData)
