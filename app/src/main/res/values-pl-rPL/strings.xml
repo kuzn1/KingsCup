@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name">Kings Cup</string>
+    <string name="new_game">Nowa Gra</string>
+    <string name="join_game">Dołącz</string>
+    <string name="options">Opcje</string>
+    <string name="about">O Grze</string>
+    <string name="female">Kobieta</string>
+    <string name="male">Facet</string>
+    <string name="enter_room_id">wprawadź kod pokoju</string>
+    <string name="connect">Połącz</string>
+    <string name="deck_view">Widok kart</string>
+    <string name="leave">Opuść</string>
+    <string name="room_id">ID Pokoju</string>
+    <string name="start">Rozpocznij</string>
+    <string name="players">Gracze</string>
+    <string name="back">Cofnij</string>
+    <string name="playerCount">Gracze %1$d/12</string>
+    <string name="devCode">DEVDEV</string>
+    <string name="kick">Wyrzuć</string>
+    <string name="nickname">Nickname</string>
+    <string name="nick">nick</string>
+    <string name="default_gender">Domyślna płeć</string>
+    <string name="card_texture">Tekstury kart</string>
+    <string name="texture_quality">Jakość tekstur</string>
+    <string name="choose">Wybierz</string>
+    <string name="go_to_lobby">Wróć do pokoju</string>
+    <string name="game_ended">Gra zakończona</string>
+    <string name="about_text">
+        O grze
+        \n\n\n\n
+        Jest to mobilna implementacja gry Kings Cup.
+        Możesz zagrać w nią ze swoimi znajomymi bez potrzeby bespośredniego kontaktu.
+        Możesz dołączyć do nich przez dowolny komunikator i bawić się grając w grę Kings Cup!
+        \n\n\n\n\n
+        Link do oryginalnej gry na Wiki
+        \n
+        en.wikipedia.org/wiki/Kings_(game)
+        \n\n\n
+        Możesz również odwiedzić naszą stronę projektu na github ie
+        \n
+        github.com/kuzn1/KingsCup
+    </string>
+    <string name="returnWaitForCreator">Host gry musi wrócić jako pierwszy</string>
+    <string name="server_down">Serwer zamknięty</string>
+    <string name="enable_sounds">Włącz dźwięki</string>
+    <string name="card">Karta</string>
+    <string name="HostLeft">Host opuścił grę</string>
+    <string name="HostIsBack">Host wrócił do pokoju</string>
+    <string name="kickOutMsg">Zostałeś wyrzucony</string>
+    <string-array name="card_name">
+        <item>Ace Save</item>
+        <item>Two for You</item>
+        <item>Three for Me</item>
+        <item>Four Floor</item>
+        <item>Five Guys</item>
+        <item>Six Chicks</item>
+        <item>Seven Heven</item>
+        <item>Eight Random</item>
+        <item>Nine WIP</item>
+        <item>Ten WIP</item>
+        <item>Jack WIP</item>
+        <item>Queen Question</item>
+        <item>Kings Cup</item>
+    </string-array>
+    <string-array name="card_texture_name_array">
+        <item>Default</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="texture_quality_name_array">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="card_description_array">
+        <item>Ace Safe\nKażdy poza osobą która dobrała kartę musi się napić</item>
+        <item>Two for You\nOsoba która dobrała kartę wybiera gracza który będzie musiał się napić</item>
+        <item>Three for Me\nOsoba która dobrała kartę musi się napić</item>
+        <item>Four Floor\nKażdy gracz musi opuścić swój telefon do ziemi i zatrzymać go na chwilę. Najgorszy czas musi się napić</item>
+        <item>Five Guys\nKażdy mężczyzna musi się napić</item>
+        <item>Six Chicks\nKażda kobieta musi się napić</item>
+        <item>Seven Heaven\nKażdy gracz musi podnieść swój telefon do góry i zatrzymać go na chwilę. Najgorszy czas musi się napić</item>
+        <item>Eight Random\nLosowe osoby muszą się napić</item>
+        <item>Nine WIP</item>
+        <item>Ten WIP</item>
+        <item>Jack WIP</item>
+        <item>Queen Question\nOsoba która dobrała kartę wybiera osobę i pytanie na które musi odpowiedzieć</item>
+        <item>Kings Cup\nKażdy musi dokończyć swojego drinka</item>
+    </string-array>
+</resources>

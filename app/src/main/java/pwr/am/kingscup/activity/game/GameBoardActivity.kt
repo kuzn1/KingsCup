@@ -3,26 +3,31 @@ package pwr.am.kingscup.activity.game
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.ContextThemeWrapper
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.core.view.marginTop
+import androidx.core.view.setPadding
+import pwr.am.kingscup.R
 import pwr.am.kingscup.activity.menu.MainActivity
 import pwr.am.kingscup.services.GameServer
 import pwr.am.kingscup.services.GameClient
-import pwr.am.kingscup.databinding.ActivityGameBoardBinding
 import pwr.am.kingscup.render.*
 
 class GameBoardActivity : Activity() {
-    private lateinit var binding: ActivityGameBoardBinding
     private var owner: Boolean = false
     private lateinit var gameKey: String
     private lateinit var playerKey: String
     private lateinit var gameClient: GameClient
     private lateinit var gameCode: String
 
+    private lateinit var menuButton : Button
     lateinit var glView: OpenGLView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityGameBoardBinding.inflate(layoutInflater)
         owner = intent.getBooleanExtra("OWNER", false)
         playerKey = intent.getStringExtra("playerKey").toString()
         gameKey = intent.getStringExtra("gameKey").toString()
@@ -45,6 +50,22 @@ class GameBoardActivity : Activity() {
         gameClient.setupDeck()
         gameClient.addListenerToActivity()
 
+        val config = getSharedPreferences("KingsCupConfig", MODE_PRIVATE)
+        gameClient.enableCardSound = config.getBoolean("cardSound", true)
+        gameClient.enableSfxSound = config.getBoolean("sfxSound", true)
+
+        if(owner) {
+            menuButton = Button(ContextThemeWrapper(this, R.style.menuButton), null, R.style.menuButton)
+            addContentView(
+                menuButton,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            )
+            menuButton.setOnClickListener {
+                Log.wtf("DEBdsUG", "clicked")
+                PlayerKickOverlay(this, gameKey).show()
+                true
+            }
+        }
     }
 
     fun startEndGameActivity() {

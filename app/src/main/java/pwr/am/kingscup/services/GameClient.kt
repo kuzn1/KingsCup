@@ -38,6 +38,8 @@ class GameClient(
     private var cardEvent: Event = DeckSetupEvent(this)
     private var playerArray = ArrayList<Player>()
     private var pickedPlayer = ""
+    var enableSfxSound = true
+    var enableCardSound = true
 
     //todo player Listener
     //todo disconnect

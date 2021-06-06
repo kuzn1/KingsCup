@@ -28,7 +28,7 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
         if (index == 0) index = game.drawables.lastIndex
 
         MediaPlayer.create(game.context, R.raw.draw).setOnPreparedListener {
-            it.start()
+            if(game.enableSfxSound) it.start()
             game.drawables[index].animate(
                 Animation(0.0f, 0.0f, -2.0f, 0.0f, 180.0f, 0.0f, 1000).also {
                     it.after {
@@ -52,7 +52,7 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
 
     override fun onInit(status: Int) {
         if(status != TextToSpeech.ERROR){
-            tts = true
+            if(game.enableCardSound) tts = true
             textToSpeech.language = Locale.ENGLISH
         }
     }

@@ -76,6 +76,10 @@ class OptionsActivity : Activity() {
             resources.getTextArray(R.array.texture_quality_name_array)
                 .indexOf(config.getString("quality", "Low")))
 
+        //Sound
+        binding.switchCardSound.isChecked = config.getBoolean("cardSound", true)
+        binding.switchSfxSound.isChecked = config.getBoolean("sfxSound", true)
+
     }
 
     private fun saveConfig() {
@@ -104,6 +108,10 @@ class OptionsActivity : Activity() {
 
             this.putInt("card_height", resources.getIntArray(R.array.card_height)[index])
             this.putInt("card_width", resources.getIntArray(R.array.card_width)[index])
+
+            //Sound
+            this.putBoolean("cardSound", binding.switchCardSound.isChecked)
+            this.putBoolean("sfxSound", binding.switchSfxSound.isChecked)
 
             this.apply()
         }

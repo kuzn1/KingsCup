@@ -42,6 +42,8 @@
     </string>
     <string name="returnWaitForCreator">Room creator must first return to lobby</string>
     <string name="server_down">Server is down</string>
+    <string name="enable_sounds">Enable sounds</string>
+    <string name="card">Card</string>
     <string name="HostLeft">Host left game</string>
     <string name="HostIsBack">Host is back in lobby</string>
     <string name="kickOutMsg">You got kick out!</string>

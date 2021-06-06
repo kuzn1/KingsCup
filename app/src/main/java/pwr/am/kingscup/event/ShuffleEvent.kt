@@ -21,7 +21,7 @@ class ShuffleEvent(game : GameClient) : Event(game) {
     override fun start() {
         val mediaPlayer = MediaPlayer.create(game.context, R.raw.slide)
         mediaPlayer.setOnPreparedListener {
-            mediaPlayer.start()
+            if(game.enableSfxSound) mediaPlayer.start()
             for (i in 1 until game.drawables.size) {
                 val rand = Random.Default
                 game.drawables[i].animate(
@@ -36,9 +36,11 @@ class ShuffleEvent(game : GameClient) : Event(game) {
                 game.drawables[i].animate(
                     Animation(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1000 + 150 * i.toLong(), false).also {
                         it.after {
-                            mediaPlayer.pause()
-                            mediaPlayer.seekTo(0)
-                            mediaPlayer.start()
+                            if(game.enableSfxSound) {
+                                mediaPlayer.pause()
+                                mediaPlayer.seekTo(0)
+                                mediaPlayer.start()
+                            }
                             Unit
                         }
                     })
