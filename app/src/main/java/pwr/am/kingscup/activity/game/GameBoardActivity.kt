@@ -90,6 +90,7 @@ class GameBoardActivity : Activity() {
     }
 
     override fun onDestroy() {
+        gameClient.textToSpeech.shutdown()
         if(owner)
             stopService(Intent(this, GameServer::class.java))
         super.onDestroy()

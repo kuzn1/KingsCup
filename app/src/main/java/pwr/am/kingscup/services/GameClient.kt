@@ -538,8 +538,6 @@ class GameClient(
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
         referenceGames.child(gameKey).child("activity/tick").removeEventListener(listenerToActivityTick)
-
-        if(ttsInitialized) textToSpeech.shutdown()
     }
 
     data class Player(
