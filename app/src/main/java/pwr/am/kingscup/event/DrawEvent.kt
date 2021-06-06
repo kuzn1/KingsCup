@@ -7,9 +7,7 @@ import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.render.Animation
 import java.util.*
 
-class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
-    private var textToSpeech  = TextToSpeech(game.context, this)
-    private var tts = false
+class DrawEvent(game: GameClient) : Event(game){
     private var index = 0
 
     fun setIndex(i : Int){
@@ -33,10 +31,10 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
                 Animation(0.0f, 0.0f, -2.0f, 0.0f, 180.0f, 0.0f, 1000).also {
                     it.after {
                         game.respond("draw_event_done", true)
-                        if (tts) {
+                        if (game.ttsInitialized) {
                             val cardNames = game.context.resources.getStringArray(R.array.card_name)
                             val text = cardNames[game.drawables[index].id % 13]
-                            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+                            game.textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
                         }
                     }
                 }
@@ -48,12 +46,5 @@ class DrawEvent(game: GameClient) : Event(game) , TextToSpeech.OnInitListener{
         game.drawables[index].animate(
             Animation(0.0f,0.0f,-1.8f, 0.0f,0.0f,0.0f,100)
         )
-    }
-
-    override fun onInit(status: Int) {
-        if(status != TextToSpeech.ERROR){
-            if(game.enableCardSound) tts = true
-            textToSpeech.language = Locale.ENGLISH
-        }
     }
 }

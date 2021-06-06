@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.TextInputViewBinding
+import java.util.*
+import kotlin.concurrent.schedule
 
 class TextInputEvent(game: GameClient): Event(game) {
 
     private lateinit var binding: TextInputViewBinding
+    private var initialized = false
 
     private var hint = ""
     private var text = ""
@@ -45,13 +48,22 @@ class TextInputEvent(game: GameClient): Event(game) {
                 binding.editText.isEnabled = false
                 game.respond(key, binding.editText.text.toString())
             }
+            initialized = true
         }
     }
 
     override fun end() {
-        game.context.runOnUiThread {
-            if (binding.root.parent != null)
-                (binding.root.parent as ViewGroup).removeView(binding.root)
+        if (initialized)
+            game.context.runOnUiThread {
+                if (binding.root.parent != null)
+                    (binding.root.parent as ViewGroup).removeView(binding.root)
+            }
+        else Timer("Delete TIE", true).schedule(200){
+            if (initialized)
+                game.context.runOnUiThread {
+                    if (binding.root.parent != null)
+                        (binding.root.parent as ViewGroup).removeView(binding.root)
+                }
         }
     }
 }

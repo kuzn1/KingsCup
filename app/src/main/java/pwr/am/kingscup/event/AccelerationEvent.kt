@@ -20,6 +20,7 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
     private var count = 0
     private lateinit var progressBar : ProgressBar
     private var progress = 0
+    private var initialized = false
 
     fun setUp(){
         state = 1
@@ -46,6 +47,7 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
                 progressBar,
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             )
+            initialized = true
             startProgressTimer()
         }
     }
@@ -68,9 +70,12 @@ class AccelerationEvent(game: GameClient) : Event(game), SensorEventListener {
     override fun end() {
         val sensorManager = (game.context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         sensorManager.unregisterListener(this)
-        game.context.runOnUiThread {
-            if (progressBar != null)
-                (progressBar.parent as ViewGroup).removeView(progressBar)
+
+        if (initialized)
+            game.context.runOnUiThread {(progressBar.parent as ViewGroup).removeView(progressBar)}
+        else Timer("Delete AE", true).schedule(200){
+            if (initialized)
+                game.context.runOnUiThread {(progressBar.parent as ViewGroup).removeView(progressBar)}
         }
     }
 

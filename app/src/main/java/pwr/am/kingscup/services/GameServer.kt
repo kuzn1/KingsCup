@@ -52,8 +52,11 @@ class GameServer() : Service() {
         ActivityCheck = false
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("responses").removeEventListener(listenerToResponses)
-        referenceGames.child(gameKey).removeValue()
-        super.onDestroy()
+        referenceGames.child(gameKey).removeValue().addOnSuccessListener {
+            super.onDestroy()
+        }.addOnFailureListener {
+            super.onDestroy()
+        }
     }
 
     fun setNewGameStatus(status: String) {
@@ -415,7 +418,7 @@ class GameServer() : Service() {
 
                             responseArray.clear()
                             cardState = 1
-                            var string = "";
+                            var string = ""
                             for (player in playersToDrink){
                                 string = string.plus(player)
                                 string = string.plus("|")
@@ -424,6 +427,7 @@ class GameServer() : Service() {
 
                             referenceGames.child(gameKey).child("gamedata")
                                 .child("players_to_drink").setValue(string)
+                            playerArray.forEach { it.responded = false }
                             setNewGameStatus("Drinks")
                             updateGameTick()
                             return

@@ -47,6 +47,27 @@
     <string name="HostLeft">Host left game</string>
     <string name="HostIsBack">Host is back in lobby</string>
     <string name="kickOutMsg">You got kick out!</string>
+    <string name="playerStringHasDisconnected">player %1$s disconnected</string>
+    <string name="otherPlayersDrink">Other players drink</string>
+    <string name="youHaveToTakeADrink">You have to take a drink</string>
+    <string name="done">Done</string>
+    <string name="playerChoosesAnotherPlayer">Player %1$s chooses another player</string>
+    <string name="playerStringHaveToTakeADrink">Player %1$s have to take a drink</string>
+    <string name="everyMaleHasToTakeADrink">Every male have to take a drink</string>
+    <string name="everyFemaleHasToTakeADrink">Every female has to take a drink</string>
+    <string name="randomPlayersDrink">Random players drink\nYou where lucky :)</string>
+    <string name="playerStringChoosesAnotherPlayer">Player %1$s chooses another player</string>
+    <string name="youHaveToFinishDrink">You have to finish your drink</string>
+    <string name="answer">Answer</string>
+    <string name="readyForNext">Ready for next round?</string>
+    <string name="yes">Yes</string>
+    <string name="enterQuestion">Enter question</string>
+    <string name="question">question</string>
+    <string name="wrongMove">Wrong move :(</string>
+    <string name="timeout">Timeout :(</string>
+    <string name="yourTimems">Your time %1$s ms</string>
+    <string name="playerAnswersQuestion">Player %1$s answers question</string>
+    <string name="questionAnswer">Question: %1$s\nAnswer: %2$s</string>
     <string-array name="card_name">
         <item>Ace Save</item>
         <item>Two for You</item>

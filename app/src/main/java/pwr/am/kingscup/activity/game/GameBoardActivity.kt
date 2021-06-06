@@ -61,7 +61,6 @@ class GameBoardActivity : Activity() {
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             )
             menuButton.setOnClickListener {
-                Log.wtf("DEBdsUG", "clicked")
                 PlayerKickOverlay(this, gameKey).show()
                 true
             }

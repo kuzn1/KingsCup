@@ -1,6 +1,7 @@
 package pwr.am.kingscup.services
 
 import android.content.Intent
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.database.ChildEventListener
@@ -24,7 +25,7 @@ class GameClient(
     val playerKey: String,
     val context: GameBoardActivity,
     val drawables: ArrayList<Drawable>
-) {
+) : TextToSpeech.OnInitListener{
 
     private val database = Firebase.database
     private var referenceGames = database.getReference("games")
@@ -38,11 +39,20 @@ class GameClient(
     private var cardEvent: Event = DeckSetupEvent(this)
     private var playerArray = ArrayList<Player>()
     private var pickedPlayer = ""
+    var textToSpeech  = TextToSpeech(context, this)
+    var ttsInitialized = false
     var enableSfxSound = true
     var enableCardSound = true
 
     //todo player Listener
     //todo disconnect
+
+    override fun onInit(status: Int) {
+        if(status != TextToSpeech.ERROR){
+            textToSpeech.language = Locale.ENGLISH
+            if(enableCardSound) ttsInitialized = true
+        }
+    }
 
     private fun sendResponse(
         data: String,
@@ -87,7 +97,14 @@ class GameClient(
                     }
                     else {
                         playerArray.find { it.playerKey == snapshot.key.toString() }?.isOnline = false
-                        Toast.makeText(context, "player ${snapshot.child("name").value.toString()} disconnected", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(
+                                R.string.playerStringHasDisconnected,
+                                snapshot.child("name").value.toString()
+                            ),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             })
@@ -168,12 +185,12 @@ class GameClient(
                     0, 13, 26, 39 -> {
                         if (current_player_id == playerKey) {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Other players drink")
+                            (cardEvent as InfoEvent).setText(context.getString(R.string.otherPlayersDrink))
                             (cardEvent as InfoEvent).sendCardActionDone()
                         } else {
                             cardEvent = InfoAcceptEvent(this)
-                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
-                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                            (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         }
                     }
@@ -185,19 +202,29 @@ class GameClient(
                             (cardEvent as PlayerChooseEvent).setKey("player_choose_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} chooses another player")
+                            (cardEvent as InfoEvent).setText(
+                                context.getString(
+                                    R.string.playerChoosesAnotherPlayer,
+                                    playerArray.find { it.playerKey == current_player_id }?.name
+                                )
+                            )
                         }
                     }
                     //Three - only current player drinks
                     2, 15, 28, 41 -> {
                         if (current_player_id == playerKey) {
                             cardEvent = InfoAcceptEvent(this)
-                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
-                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                            (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} have to take a drink")
+                            (cardEvent as InfoEvent).setText(
+                                context.getString(
+                                    R.string.playerStringHaveToTakeADrink,
+                                    playerArray.find { it.playerKey == current_player_id }?.name
+                                )
+                            )
                             (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
@@ -210,12 +237,12 @@ class GameClient(
                     4, 17, 30, 43 -> {
                         if (gender == "male") {
                             cardEvent = InfoAcceptEvent(this)
-                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
-                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                            (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Every male have to take a drink")
+                            (cardEvent as InfoEvent).setText(context.getString(R.string.everyMaleHasToTakeADrink))
                             (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
@@ -223,12 +250,12 @@ class GameClient(
                     5, 18, 31, 44 -> {
                         if (gender == "female") {
                             cardEvent = InfoAcceptEvent(this)
-                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
-                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                            (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Every female have to take a drink")
+                            (cardEvent as InfoEvent).setText(context.getString(R.string.everyFemaleHasToTakeADrink))
                             (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
@@ -241,12 +268,12 @@ class GameClient(
                     7, 20, 33, 46 -> {
                         if (Random.nextInt(0, 2) == 1) {
                             cardEvent = InfoAcceptEvent(this)
-                            (cardEvent as InfoAcceptEvent).setText("You have to take a drink")
-                            (cardEvent as InfoAcceptEvent).setButtonText("I drank")
+                            (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                            (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                             (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Random players drink\nYou where lucky :)")
+                            (cardEvent as InfoEvent).setText(context.getString(R.string.randomPlayersDrink))
                             (cardEvent as InfoEvent).sendCardActionDone()
                         }
                     }
@@ -258,14 +285,19 @@ class GameClient(
                             (cardEvent as PlayerChooseEvent).setKey("player_choose_event_queen")
                         } else {
                             cardEvent = InfoEvent(this)
-                            (cardEvent as InfoEvent).setText("Player ${playerArray.find { it.playerKey == current_player_id }?.name} chooses another player to answer question")
+                            (cardEvent as InfoEvent).setText(
+                                context.getString(
+                                    R.string.playerStringChoosesAnotherPlayer,
+                                    playerArray.find { it.playerKey == current_player_id }?.name
+                                )
+                            )
                         }
                     }
                     //King - all players finish drinks
                     12, 25, 38, 51 -> {
                         cardEvent = InfoAcceptEvent(this)
-                        (cardEvent as InfoAcceptEvent).setText("You have to finish your drink")
-                        (cardEvent as InfoAcceptEvent).setButtonText("I finish")
+                        (cardEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToFinishDrink))
+                        (cardEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                         (cardEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                     }
                 }
@@ -277,8 +309,8 @@ class GameClient(
 
                 if (playersToDrink.find { it == playerKey } != null) {
                     currentEvent = InfoAcceptEvent(this)
-                    (currentEvent as InfoAcceptEvent).setText("You have to take a drink")
-                    (currentEvent as InfoAcceptEvent).setButtonText("I finish")
+                    (currentEvent as InfoAcceptEvent).setText(context.getString(R.string.youHaveToTakeADrink))
+                    (currentEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.done))
                     (currentEvent as InfoAcceptEvent).setKey("info_accept_event_drink")
                 } else {
                     currentEvent = InfoEvent(this)
@@ -291,7 +323,7 @@ class GameClient(
                     string = string.dropLast(2)
 
 
-                    (currentEvent as InfoEvent).setText("Players: $string have to take a drink")
+                    (currentEvent as InfoEvent).setText(context.getString(R.string.playerStringHaveToTakeADrink,string))
 
                 }
                 currentEvent.start()
@@ -302,21 +334,22 @@ class GameClient(
                     currentEvent.end()
                     currentEvent = TextInputEvent(this)
                     (currentEvent as TextInputEvent).setText(snapshot.child("question").value.toString())
-                    (currentEvent as TextInputEvent).setHint("answer")
-                    (currentEvent as TextInputEvent).setButtonText("Answer")
+                    (currentEvent as TextInputEvent).setHint(context.getString(R.string.answer))
+                    (currentEvent as TextInputEvent).setButtonText(context.getString(R.string.answer))
                     (currentEvent as TextInputEvent).setKey("text_input_event_answer")
                     (currentEvent as TextInputEvent).start()
 
                 } else {
                     currentEvent = InfoEvent(this)
                     (currentEvent as InfoEvent).setText(
-                        "Player ${
+                        context.getString(
+                            R.string.playerAnswersQuestion,
                             playerArray.find {
                                 it.playerKey == snapshot.child(
                                     "selected_player_for_question"
                                 ).value.toString()
                             }?.name
-                        } answers question"
+                        )
                     )
                     currentEvent.start()
                 }
@@ -324,7 +357,13 @@ class GameClient(
             "Answer" -> {
                 Log.e("Client ", "Answer")
                 currentEvent = InfoEvent(this)
-                (currentEvent as InfoEvent).setText("Question: ${snapshot.child("question").value.toString()}\n Answer: ${snapshot.child("answer").value.toString()}")
+                (currentEvent as InfoEvent).setText(
+                    context.getString(
+                        R.string.questionAnswer,
+                        snapshot.child("question").value.toString(),
+                        snapshot.child("answer").value.toString()
+                    )
+                )
                 currentEvent.start()
                 Timer("task", false).schedule(5000) {
                     sendResponse("CardActionDone", "")
@@ -333,8 +372,8 @@ class GameClient(
             "AcceptThisRound" -> {
                 Log.e("Client ", "AcceptThisRound")
                 currentEvent = InfoAcceptEvent(this)
-                (currentEvent as InfoAcceptEvent).setText("Ready for next?")
-                (currentEvent as InfoAcceptEvent).setButtonText("Yes")
+                (currentEvent as InfoAcceptEvent).setText(context.getString(R.string.readyForNext))
+                (currentEvent as InfoAcceptEvent).setButtonText(context.getString(R.string.yes))
                 (currentEvent as InfoAcceptEvent).setKey("info_accept_event_accept")
                 currentEvent.start()
             }
@@ -381,7 +420,9 @@ class GameClient(
                 currentEvent = RemoveCardEvent(this)
                 (currentEvent as RemoveCardEvent).setCard(current_card_id)
                 currentEvent.start()
-                sendResponse("Accepted", "")
+                Timer("accept timeout task", false).schedule(1000) {
+                    sendResponse("Accepted", "")
+                }
             }
 
 
@@ -394,10 +435,10 @@ class GameClient(
                 pickedPlayer = value.toString()
                 currentEvent.end()
                 currentEvent = TextInputEvent(this)
-                (currentEvent as TextInputEvent).setButtonText("Ask")
-                (currentEvent as TextInputEvent).setText("Enter question")
+                (currentEvent as TextInputEvent).setButtonText(context.getString(R.string.done))
+                (currentEvent as TextInputEvent).setText(context.getString(R.string.enterQuestion))
                 (currentEvent as TextInputEvent).setKey("text_input_event_question")
-                (currentEvent as TextInputEvent).setHint("question")
+                (currentEvent as TextInputEvent).setHint(context.getString(R.string.question))
                 (currentEvent as TextInputEvent).start()
             }
 
@@ -417,17 +458,22 @@ class GameClient(
                 currentEvent = InfoEvent(this)
                 with(value as Long) {
                     if (this == 0L) {
-                        (currentEvent as InfoEvent).setText("Wrong Move :(")
+                        (currentEvent as InfoEvent).setText(context.getString(R.string.wrongMove))
                         Timer("task", false).schedule(2000) {
                             sendResponse("Time", "5000")
                         }
                     } else if(this == 5000L){
-                        (currentEvent as InfoEvent).setText("Timeout :(")
+                        (currentEvent as InfoEvent).setText(context.getString(R.string.timeout))
                         Timer("task", false).schedule(2000) {
                             sendResponse("Time", "5000")
                         }
                     } else {
-                        (currentEvent as InfoEvent).setText("Your time: " + this.toString() + "ms")
+                        (currentEvent as InfoEvent).setText(
+                            context.getString(
+                                R.string.yourTimems,
+                                this.toString()
+                            )
+                        )
                         Timer("task", false).schedule(2000) {
                             sendResponse("Time", value.toString())
                         }
@@ -449,7 +495,10 @@ class GameClient(
         referenceGames.child(gameKey).child("players").removeEventListener(listenerToPlayers)
         referenceGames.child(gameKey).child("gamedata").removeEventListener(listenerToGameData)
         referenceGames.child(gameKey).child("activity/tick").removeEventListener(listenerToActivityTick)
+
+        if(ttsInitialized) textToSpeech.shutdown()
     }
+
     data class Player(
         val playerKey: String,
         var isOnline: Boolean = true,

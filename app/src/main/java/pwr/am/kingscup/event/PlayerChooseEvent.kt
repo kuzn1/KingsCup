@@ -8,11 +8,14 @@ import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.R
 import pwr.am.kingscup.databinding.PlayerViewRowBinding
 import pwr.am.kingscup.databinding.PlayetChooseViewBinding
+import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 class PlayerChooseEvent(game: GameClient) : Event(game) {
 
     private var binding = PlayetChooseViewBinding.inflate(LayoutInflater.from(game.context))
+    private var initialized = false
     private lateinit var players: ArrayList<GameClient.Player>
     private var key = "player_choose_event"
     private var chosen = false
@@ -33,7 +36,8 @@ class PlayerChooseEvent(game: GameClient) : Event(game) {
                 if (player.isOnline) {
                     val row = PlayerViewRowBinding.inflate(LayoutInflater.from(game.context))
                     row.nickName.text = player.name
-                    row.nickName.textSize = 18f
+                    row.nickName.textSize = 14f
+                    row.kickButton.textSize = 14f
                     row.kickButton.visibility = View.VISIBLE
                     row.kickButton.text = game.context.getString(R.string.choose)
                     row.kickButton.setOnClickListener {
@@ -53,13 +57,22 @@ class PlayerChooseEvent(game: GameClient) : Event(game) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
+            initialized = true
         }
     }
 
     override fun end() {
-        game.context.runOnUiThread {
-            if (binding.root.parent != null)
-                (binding.root.parent as ViewGroup).removeView(binding.root)
+        if (initialized)
+            game.context.runOnUiThread {
+                if (binding.root.parent != null)
+                    (binding.root.parent as ViewGroup).removeView(binding.root)
+            }
+        else Timer("Delete PCE", true).schedule(200){
+            if (initialized)
+                game.context.runOnUiThread {
+                    if (binding.root.parent != null)
+                        (binding.root.parent as ViewGroup).removeView(binding.root)
+                }
         }
     }
 }

@@ -64,9 +64,10 @@ class PlayerViewActivity : Activity() {
                         finish()
                     }
 
-                    for (player in players){
-                        if(player.second == snapshot.key.toString())
-                            players.remove(player)
+                    val iter = players.iterator()
+                    while(iter.hasNext()){
+                        if(iter.next().second == snapshot.key.toString())
+                            iter.remove()
                     }
                     loadPlayers(intent.getBooleanExtra("OWNER", false))
                 }
@@ -97,7 +98,7 @@ class PlayerViewActivity : Activity() {
         referenceGames.child(gameKey).child("players").removeEventListener(listener)
         lobbyClient.removeServerTickListener()
         val intent = Intent()
-        intent.putExtra("result", "back");
+        intent.putExtra("result", "back")
         this.setResult(RESULT_OK, intent)
         finish()
     }

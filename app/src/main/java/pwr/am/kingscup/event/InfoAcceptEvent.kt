@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import pwr.am.kingscup.services.GameClient
 import pwr.am.kingscup.databinding.InfoViewBinding
+import java.util.*
+import kotlin.concurrent.schedule
 
 class InfoAcceptEvent(game: GameClient): Event(game) {
 
@@ -12,6 +14,7 @@ class InfoAcceptEvent(game: GameClient): Event(game) {
     private var text = ""
     private var buttonText = ""
     private var key = "info_accept_event_done"
+    private var initialized = false
 
     fun setText(t : String){
         text = t
@@ -38,13 +41,18 @@ class InfoAcceptEvent(game: GameClient): Event(game) {
                 game.respond(key, true)
                 binding.button.isEnabled = false
             }
+            initialized = true
         }
     }
 
     override fun end() {
-        game.context.runOnUiThread {
-            if(binding.root.parent != null)
-                (binding.root.parent as ViewGroup).removeView(binding.root)
+        if (initialized)
+            game.context.runOnUiThread {if(binding.root.parent != null) (binding.root.parent as ViewGroup).removeView(binding.root)}
+        else Timer("Delete IAE", true).schedule(200){
+            if (initialized)
+                game.context.runOnUiThread {
+                    if(binding.root.parent != null) (binding.root.parent as ViewGroup).removeView(binding.root)
+                }
         }
     }
 }

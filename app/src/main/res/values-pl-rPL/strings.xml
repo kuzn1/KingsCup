@@ -47,6 +47,27 @@
     <string name="HostLeft">Host opuścił grę</string>
     <string name="HostIsBack">Host wrócił do pokoju</string>
     <string name="kickOutMsg">Zostałeś wyrzucony</string>
+    <string name="playerStringHasDisconnected">gracz %1$s się rozłączył</string>
+    <string name="otherPlayersDrink">Inni gracze piją</string>
+    <string name="youHaveToTakeADrink">Musisz się napić</string>
+    <string name="done">Zrobione</string>
+    <string name="playerChoosesAnotherPlayer">Gracz %1$s wybiera innego gracza</string>
+    <string name="playerStringHaveToTakeADrink">Gracz %1$s musi się napić</string>
+    <string name="everyMaleHasToTakeADrink">Każdy facet musi się napić</string>
+    <string name="everyFemaleHasToTakeADrink">Każda dziewczyna musi się napić</string>
+    <string name="randomPlayersDrink">Losowi gracze piją\nMasz szczęście :)</string>
+    <string name="playerStringChoosesAnotherPlayer">Gracz %1$s wybiera innego gracza</string>
+    <string name="youHaveToFinishDrink">Musisz dokończyć swojego drinka</string>
+    <string name="answer">Odpowiedź</string>
+    <string name="readyForNext">Gotowy na kolejną rundę?</string>
+    <string name="yes">Tak</string>
+    <string name="enterQuestion">Wprowadź pytanie</string>
+    <string name="question">pytanie</string>
+    <string name="wrongMove">Zły ruch :(</string>
+    <string name="timeout">Koniec czasu :(</string>
+    <string name="yourTimems">Twój czas: %1$s ms</string>
+    <string name="playerAnswersQuestion">Gracz %1$s odpowiada na pytanie</string>
+    <string name="questionAnswer">Pytanie: %1$s\nOdpowiedź: %2$s</string>
     <string-array name="card_name">
         <item>Ace Save</item>
         <item>Two for You</item>
