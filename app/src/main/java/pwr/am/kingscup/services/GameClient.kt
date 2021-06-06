@@ -73,6 +73,7 @@ class GameClient(
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
                     if (snapshot.key.toString() == playerKey) {
+                        removeAllListeners()
                         Toast.makeText(context, context.getString(R.string.server_down), Toast.LENGTH_LONG).show()
                         context.runOnUiThread{
                             val intent = Intent(
